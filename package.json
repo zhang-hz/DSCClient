@@ -1,7 +1,7 @@
 {
   "name": "DSC-Library-Kit",
-  "author":"Zhang Haozhi",
-  "description":"Software for MIS-DSC Experment System",
+  "author": "Zhang Haozhi",
+  "description": "Software for MIS-DSC Experment System",
   "version": "0.0.1",
   "private": true,
   "engines": {
@@ -22,7 +22,7 @@
     "watch": "node scripts/watch.js",
     "lint": "eslint . --ext js,ts,vue"
   },
-  "build":{
+  "build": {
     "appId": "com.zhanghaozhi.dsckit"
   },
   "browserslist": [
@@ -35,7 +35,7 @@
     "electron": "16.0.4",
     "electron-builder": "22.14.5",
     "electron-devtools-installer": "3.2.0",
-    "rollup-plugin-copy":"^3.4.0",
+    "rollup-plugin-copy": "^3.4.0",
     "eslint": "8.4.1",
     "eslint-plugin-vue": "8.2.0",
     "nano-staged": "0.4.5",
@@ -47,8 +47,8 @@
     "electron-updater": "4.6.5",
     "vue": "3.2.24",
     "vue-router": "4.0.12",
-    "echarts":"^5.2.2",
-    "element-plus":"^1.2.0-beta.5",
-    "exceljs":"^4.3.0"
+    "echarts": "^5.2.2",
+    "element-plus": "^1.2.0-beta.5",
+    "exceljs": "^4.3.0"
   }
 }
