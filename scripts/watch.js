@@ -20,6 +20,7 @@ const sharedConfig = {
     watch: {},
   },
   logLevel: LOG_LEVEL,
+  clearScreen: false
 };
 
 /** Messages on stderr that match any of the contained patterns will be stripped from output */

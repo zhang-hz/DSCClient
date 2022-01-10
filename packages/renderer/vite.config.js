@@ -1,7 +1,7 @@
 /* eslint-env node */
 
-import {chrome} from '../../electron-vendors.config.json';
-import {join} from 'path';
+import {chrome, node} from '../../electron-vendors.config.json';
+import {join , resolve} from 'path';
 import {builtinModules} from 'module';
 import vue from '@vitejs/plugin-vue';
 
@@ -27,12 +27,18 @@ const config = {
     },
   },
   build: {
-    sourcemap: true,
+    sourcemap: false,
     target: `chrome${chrome}`,
     outDir: 'dist',
     assetsDir: '.',
+    minify:false,
     rollupOptions: {
+      input: {
+        main: resolve(PACKAGE_ROOT, 'index.html'),
+        helper: resolve(PACKAGE_ROOT, 'helper.html')
+      },
       external: [
+        'electron',
         ...builtinModules,
       ],
     },

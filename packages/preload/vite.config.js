@@ -1,4 +1,5 @@
 import {chrome} from '../../electron-vendors.config.json';
+import copy from 'rollup-plugin-copy'
 import {join} from 'path';
 import {builtinModules} from 'module';
 
@@ -14,17 +15,17 @@ const config = {
   envDir: process.cwd(),
   resolve: {
     alias: {
-      '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      '/@/': join(PACKAGE_ROOT, 'src') + '/'
     },
   },
   build: {
-    sourcemap: 'inline',
+    sourcemap: false,
     target: `chrome${chrome}`,
     outDir: 'dist',
     assetsDir: '.',
-    minify: process.env.MODE !== 'development',
+    minify: false,
     lib: {
-      entry: 'src/index.ts',
+      entry: 'src/index.js',
       formats: ['cjs'],
     },
     rollupOptions: {
@@ -33,12 +34,13 @@ const config = {
         ...builtinModules,
       ],
       output: {
-        entryFileNames: '[name].cjs',
-      },
+        entryFileNames: '[name].cjs'
+      }
     },
     emptyOutDir: true,
     brotliSize: false,
   },
+
 };
 
 export default config;

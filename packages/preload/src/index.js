@@ -1,7 +1,4 @@
-import {contextBridge} from 'electron';
-
-import type {BinaryLike} from 'crypto';
-import {createHash} from 'crypto';
+import {contextBridge, ipcRenderer } from 'electron';
 
 /**
  * The "Main World" is the JavaScript context that your main renderer code runs in.
@@ -20,21 +17,29 @@ import {createHash} from 'crypto';
  */
 
 /**
- * Expose Environment versions.
- * @example
- * console.log( window.versions )
- */
-contextBridge.exposeInMainWorld('versions', process.versions);
-
-/**
  * Safe expose node.js API
  * @example
  * window.nodeCrypto('data')
  */
-contextBridge.exposeInMainWorld('nodeCrypto', {
-  sha256sum(data: BinaryLike) {
-    const hash = createHash('sha256');
-    hash.update(data);
-    return hash.digest('hex');
-  },
+
+contextBridge.exposeInMainWorld('ipcRenderer', {
+    send:(channel,data) =>{
+        ipcRenderer.send(channel,data)
+    },
+    on:(channel,func) => {
+        ipcRenderer.on(channel,(event, ...args) => func(...args))
+    }
+});
+
+contextBridge.exposeInMainWorld('dataSaver', {
+    excel:(data,path) =>{
+        ipcRenderer.send('helperipc','saveDataToXLSX',JSON.stringify({
+            data:data,
+            path:path
+        }))
+    },
+    selectPath:async (prepath)=>{
+        let path = await ipcRenderer.invoke('showOpenDialog',prepath)
+        return path
+    }
 });

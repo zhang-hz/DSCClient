@@ -19,13 +19,13 @@ const config = {
     },
   },
   build: {
-    sourcemap: 'inline',
+    sourcemap: false,
     target: `node${node}`,
     outDir: 'dist',
     assetsDir: '.',
-    minify: process.env.MODE !== 'development',
+    minify: false,
     lib: {
-      entry: 'src/index.ts',
+      entry: 'src/index.js',
       formats: ['cjs'],
     },
     rollupOptions: {

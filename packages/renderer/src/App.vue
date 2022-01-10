@@ -1,31 +1,184 @@
 <template>
-  <img
-    alt="Vue logo"
-    src="../assets/logo.svg"
-    width="300"
-  >
-  <app-navigation />
-  <router-view />
+    <div id="chart">
+		<chart-frame ref="chartFrame"></chart-frame>
+    </div>
+    <div id="control">
+        <el-row class="mainframe">
+            <el-col id="rightcol">
+                <router-view v-slot="{ Component }">
+                    <keep-alive>
+                        <component :is="Component" />
+                    </keep-alive>
+                </router-view>
+            </el-col>
+            <el-col id="leftcol">
+                <side-nav></side-nav>
+            </el-col>
+        </el-row>
+    </div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue';
-import AppNavigation from '/@/components/AppNavigation.vue';
+<script>
+import { defineComponent, computed } from "vue";
+import SideNav from "/@/components/Nav.vue";
+import ChartFrame from "/@/components/ChartFrame.vue";
+
+const print = console
+
 export default defineComponent({
-  name: 'App',
-  components: {
-    AppNavigation,
-  },
+    name: "App",
+    components: {
+        SideNav,
+        ChartFrame,
+    },
+    provide() {
+        let self = this;
+        return {
+
+			chartSwitch: computed(()=>this.chart.switch),
+			chartOption: computed(()=>this.chart.option),
+			startChart(){
+				self.chart.switch = true
+				self.$refs.chartFrame.startChartEvent()
+			},
+			stopChart(){
+				self.chart.switch = false
+				self.$refs.chartFrame.stopChartEvent()
+			},
+			resetChart(){
+				self.$refs.chartFrame.resetChartEvent()
+				self.chart.switch = true
+				setTimeout(function(){
+					self.chart.switch = false
+				},100)
+			},
+			settingChart(option){
+				self.chart.option[option.chart] = {
+					catalog:option.catalog,
+					channel:option.channel
+				}
+			},
+
+			async saveData(path){
+				await self.$refs.chartFrame.saveDataToFile(path)
+			},
+
+            httpAddress: computed(() => this.httpAddr),
+            socketAddress: computed(() => this.socketAddr),
+            apiPrefix: computed(() => this.apiPref),
+            async fetchAvgVoltage() {
+                try {
+                    var res = await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/avgvoltage" +
+                            "/50000"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }
+                let body = await res.json();
+                return body.Voltage;
+            },
+            async setDACVoltage(target, voltage) {
+                try {
+                    var res = await fetch(
+                        "http://" +
+                            this.httpAddress.value +
+                            this.apiPrefix.value +
+                            "/setdacvoltage/" +
+                            target +
+                            "/" +
+                            voltage
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }
+                let check = await res.json().voltage;
+                return check;
+            },
+        };
+    },
+    data() {
+        return {
+			chart:{
+				startTime:0,
+				switch:false,
+				option:{
+					main:{
+						catalog:"voltage",
+						channel:0
+					}
+				}
+			},
+            httpAddr: "192.168.3.1:3000",
+            socketAddr: "192.168.3.1:4567",
+            apiPref: "/api/v1",
+			
+        };
+    },
 });
 </script>
 
 <style>
+html {
+    background-color: #ffffff;
+}
+body {
+    height: 900px;
+    margin: 0;
+    overflow: hidden;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+    display: flex;
+    height: 100%;
+    background-color: #ebeef5;
+}
+#chart {
+    width: 1160px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+#control {
+    display: flex;
+	flex-direction: column;
+    width: 480px;
+}
+
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 0;
+    height: 100%;
+    width: 100%;
+}
+.controlcard {
+    background-color: #ffffff;
+    height: 100%;
+    border-left: 2px solid #e4e7ed;
+    padding: 20px;
+}
+.el-row.mainframe {
+    height: 100%;
+    justify-content: flex-end;
+}
+#leftcol {
+    flex: 0 0 60px;
+    width: 60px;
+}
+#rightcol {
+    flex: 0 0 100%;
+    max-width: 400px;
+    height: 100vh;
 }
 </style>
