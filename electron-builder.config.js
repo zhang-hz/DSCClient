@@ -12,7 +12,7 @@ const config = {
     target:"dmg"
   },
   win:{
-    target:"portable"
+    target:"zip"
   },
   directories: {
     output: 'dist',
