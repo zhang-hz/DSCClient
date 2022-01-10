@@ -28,12 +28,6 @@
   "browserslist": [
     "Chrome 96"
   ],
-  "simple-git-hooks": {
-    "pre-commit": "npx nano-staged"
-  },
-  "nano-staged": {
-    "*.{js,ts,vue}": "eslint --cache --fix"
-  },
   "devDependencies": {
     "@vitejs/plugin-vue": "1.10.2",
     "cross-env": "7.0.3",
