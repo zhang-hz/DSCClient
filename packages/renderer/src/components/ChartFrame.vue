@@ -116,7 +116,7 @@ export default defineComponent({
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding: 20px 0 0 0;
+    padding: 5px 0 0 0;
 }
 .chartcol {
     display: flex;

@@ -110,7 +110,8 @@ export default defineComponent({
                     show: true,
                     left: "45px",
                     right: "45px",
-                    bottom:"80px"
+                    bottom:"70px",
+                    top:"45px"
                 },
                 toolbox: {
                     show: true,
@@ -171,6 +172,6 @@ export default defineComponent({
 <style>
 #echart-main {
     width: 100%;
-    height: 600px;
+    height: 500px;
 }
 </style>

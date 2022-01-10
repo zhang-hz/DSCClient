@@ -36,8 +36,8 @@ let helperWindow = null;
 
 const createMainWindow = async () => {
     mainWindow = new BrowserWindow({
-        width: 1198,
-        height: 880,
+        width: process.platform == 'darwin'?1200:1198,
+        height: 750,
         useContentSize: true,
         show: false,
         webPreferences: {
