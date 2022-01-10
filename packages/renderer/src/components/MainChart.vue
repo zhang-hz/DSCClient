@@ -108,8 +108,9 @@ export default defineComponent({
                 },
                 grid: {
                     show: true,
-                    left: "5%",
-                    right: "5%",
+                    left: "45px",
+                    right: "45px",
+                    bottom:"80px"
                 },
                 toolbox: {
                     show: true,
@@ -135,6 +136,7 @@ export default defineComponent({
                         type: "slider",
                         yAxisIndex: 0,
                         filterMode: "none",
+                        right:"10px"
                     },
                     {
                         type: "inside",

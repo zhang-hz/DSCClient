@@ -6,17 +6,14 @@
         <div
             class="chartcol"
             id="echart-assist1"
-            style="width: 350px; height: 240px"
         ></div>
         <div
             class="chartcol"
             id="echart-assist2"
-            style="width: 350px; height: 240px"
         ></div>
         <div
             class="chartcol"
             id="echart-assist3"
-            style="width: 350px; height: 240px"
         ></div>
     </div>
 </template>

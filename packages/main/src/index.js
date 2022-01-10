@@ -36,7 +36,7 @@ let helperWindow = null;
 
 const createMainWindow = async () => {
     mainWindow = new BrowserWindow({
-        width: 1578,
+        width: 1198,
         height: 880,
         useContentSize: true,
         show: false,

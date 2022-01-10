@@ -270,19 +270,19 @@ export default defineComponent({
 
 <style>
 #calibrationcard {
-  padding: 20px;
+  padding: 12px;
 }
 #calibrationalert {
   margin-bottom: 40px;
 }
 #calibrationstep {
   height: 500px;
-  width: 240px;
-  max-width: 240px;
+  width: 200px;
+  max-width: 200px;
   padding-left: 10px;
 }
 #calibrationaction {
-  max-width: 100px;
+  max-width: 80px;
 }
 .calibrationbtn {
   padding: 6px 0 66px 10px;

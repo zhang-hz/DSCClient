@@ -139,7 +139,7 @@ body {
     background-color: #ebeef5;
 }
 #chart {
-    width: 1160px;
+    width: 820px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -149,7 +149,7 @@ body {
 #control {
     display: flex;
 	flex-direction: column;
-    width: 480px;
+    width: 380px;
 }
 
 #app {
@@ -166,7 +166,7 @@ body {
     background-color: #ffffff;
     height: 100%;
     border-left: 2px solid #e4e7ed;
-    padding: 20px;
+    padding: 12px;
 }
 .el-row.mainframe {
     height: 100%;
@@ -174,11 +174,11 @@ body {
 }
 #leftcol {
     flex: 0 0 60px;
-    width: 60px;
+    width: 40px;
 }
 #rightcol {
     flex: 0 0 100%;
-    max-width: 400px;
+    max-width: 320px;
     height: 100vh;
 }
 </style>

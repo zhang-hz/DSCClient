@@ -289,28 +289,29 @@ export default defineComponent({
 
 <style>
 .statusitem {
-    padding: 16px 20px;
-    margin-bottom: 20px;
+    padding: 12px;
+    margin-bottom: 16px;
     border-radius: 6px;
     background: #f2f6fc;
 }
 .statusicon {
-    max-width: 70px;
+    max-width: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 20px;
+    margin-right: 16px;
+    margin-left: 4px;
 }
 .statusicon > .el-button.is-circle {
 }
 .statusicon > .el-button.is-circle i {
-    font-size: 40px;
+    font-size: 30px;
 }
 .statusicon > .el-button.is-circle svg {
-    font-size: 40px;
+    font-size: 30px;
 }
 .statusbutton {
-    width: 100px;
+    width: 94px;
 }
 .statustitle {
     width: 100%;
@@ -318,16 +319,16 @@ export default defineComponent({
     color: #303133;
 }
 .statuscontrol {
-    max-width: 220px;
+    max-width: 200px;
 }
 .statusinput {
     padding: 0px 0 16px 0;
     width: 100%;
 }
 .statusinput #dacinput {
-    width: 230px;
+    width: 180px;
 }
 .statusbutton.dacbutton {
-    width: 98px;
+    width: 83px;
 }
 </style>

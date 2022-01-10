@@ -201,7 +201,7 @@ export default defineComponent({
 
 <style>
 .testitem {
-    padding: 16px 16px;
+    padding: 12px 12px;
     margin-bottom: 20px;
     border-radius: 6px;
     background: #f2f6fc;
@@ -221,19 +221,29 @@ export default defineComponent({
     padding-bottom: 20px;
 }
 .testbutton {
-    width: 74px;
+    width: 62px;
+    margin-right: 5px;
+    margin-left: 0px!important;
+    padding: 10px;
 }
 #testchartselect {
-    width: 85px;
+    width: 70px;
 }
 #testcatalogselect {
-    width: 120px;
+    width: 100px;
 }
 #testchannelselect {
-    width: 120px;
+    width: 100px;
 }
 #saverinput{
-    width: 240px;
+    width: 198px;
+    margin-right:10px;
+}
+#testchartselect.el-input__inner {
+    padding: 0 10px;
+}
+#saverfilename.el-input__inner {
+    padding: 0 10px;
 }
 #savepathselector {
     width: 80px;
