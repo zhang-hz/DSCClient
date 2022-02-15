@@ -161,6 +161,7 @@ export default defineComponent({
                 } catch (e) {
                     print.error(e);
                     return;
+                    
                 }                
             }
         };
