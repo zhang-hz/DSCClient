@@ -86,8 +86,8 @@ export default defineComponent({
                 try {
                     var res = await fetch(
                         "http://" +
-                            this.httpAddress.value +
-                            this.apiPrefix.value +
+                            self.httpAddr +
+                            self.apiPref +
                             "/setdacvoltage/" +
                             target +
                             "/" +
@@ -100,6 +100,69 @@ export default defineComponent({
                 let check = await res.json().voltage;
                 return check;
             },
+            async startHeaterStatic(temperature){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/static/start/" +
+                            temperature
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }                
+            },
+            async stopHeaterStatic(){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/static/stop"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }                
+            },
+            async setupHeaterTemperature(temperature){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/static/temperature/" +
+                            temperature
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }                
+            },
+            async setupHeaterPIDParameters(pidsetting){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/pid/parameters/" +
+                            pidsetting.kp +
+                            "/" +
+                            pidsetting.ki +
+                            "/" +
+                            pidsetting.kd +
+                            "/" +
+                            pidsetting.tolerence +
+                            "/" +
+                            pidsetting.errorTolerence
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }                
+            }
         };
     },
     data() {

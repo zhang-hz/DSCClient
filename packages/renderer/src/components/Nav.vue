@@ -24,7 +24,7 @@ import {
   Location,
   VideoPlay,
   Setting,
-} from '@element-plus/icons'
+} from '@element-plus/icons-vue'
 
 const print = console
 

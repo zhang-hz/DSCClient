@@ -3,6 +3,7 @@
 
 
 export default function() {
+	
 	const EOF = 'colfer: EOF';
 
 	// The upper limit for serial byte sizes.
@@ -18,6 +19,10 @@ export default function() {
 		this.time = null;
 		this.time_ns = 0;
 
+		this.interval = 0;
+
+		this.datalength = 0;
+
 		this.directvch0 = new Float64Array(0);
 
 		this.directvch1 = new Float64Array(0);
@@ -27,6 +32,18 @@ export default function() {
 		this.directvch3 = new Float64Array(0);
 
 		this.diffv = new Float64Array(0);
+
+		this.heatervch0 = new Float64Array(0);
+
+		this.heatervch1 = new Float64Array(0);
+
+		this.diffheaterv = new Float64Array(0);
+
+		this.heaterpch0 = new Float64Array(0);
+
+		this.heaterpch1 = new Float64Array(0);
+
+		this.diffheaterp = new Float64Array(0);
 
 		for (var p in init) this[p] = init[p];
 	}
@@ -44,7 +61,7 @@ export default function() {
 
 			var ns = this.time_ns || 0;
 			if (ns < 0 || ns >= 1E6)
-				throw new Error('colfer: driver/Colfbuf field time_ns not in range (0, 1ms>');
+				throw new Error('colfer: colfer/Colfbuf field time_ns not in range (0, 1ms>');
 			var msf = ms % 1E3;
 			if (ms < 0 && msf) {
 				s--
@@ -79,11 +96,34 @@ export default function() {
 			}
 		}
 
+		if (this.interval) {
+			buf[i++] = 1;
+			view.setFloat64(i, this.interval);
+			i += 8;
+		} else if (Number.isNaN(this.interval)) {
+			buf.set([1, 0x7f, 0xf8, 0, 0, 0, 0, 0, 0], i);
+			i += 9;
+		}
+
+		if (this.datalength) {
+			if (this.datalength < 0) {
+				buf[i++] = 2 | 128;
+				if (this.datalength < Number.MIN_SAFE_INTEGER)
+					throw new Error('colfer: colfer/Colfbuf field datalength exceeds Number.MIN_SAFE_INTEGER');
+				i = encodeVarint(buf, i, -this.datalength);
+			} else {
+				buf[i++] = 2; 
+				if (this.datalength > Number.MAX_SAFE_INTEGER)
+					throw new Error('colfer: colfer/Colfbuf field datalength exceeds Number.MAX_SAFE_INTEGER');
+				i = encodeVarint(buf, i, this.datalength);
+			}
+		}
+
 		if (this.directvch0 && this.directvch0.length) {
 			var a = this.directvch0;
 			if (a.length > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch0 length exceeds colferListMax');
-			buf[i++] = 1;
+				throw new Error('colfer: colfer.colfbuf.directvch0 length exceeds colferListMax');
+			buf[i++] = 3;
 			i = encodeVarint(buf, i, a.length);
 			a.forEach(function(f) {
 				view.setFloat64(i, f);
@@ -94,8 +134,8 @@ export default function() {
 		if (this.directvch1 && this.directvch1.length) {
 			var a = this.directvch1;
 			if (a.length > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch1 length exceeds colferListMax');
-			buf[i++] = 2;
+				throw new Error('colfer: colfer.colfbuf.directvch1 length exceeds colferListMax');
+			buf[i++] = 4;
 			i = encodeVarint(buf, i, a.length);
 			a.forEach(function(f) {
 				view.setFloat64(i, f);
@@ -106,8 +146,8 @@ export default function() {
 		if (this.directvch2 && this.directvch2.length) {
 			var a = this.directvch2;
 			if (a.length > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch2 length exceeds colferListMax');
-			buf[i++] = 3;
+				throw new Error('colfer: colfer.colfbuf.directvch2 length exceeds colferListMax');
+			buf[i++] = 5;
 			i = encodeVarint(buf, i, a.length);
 			a.forEach(function(f) {
 				view.setFloat64(i, f);
@@ -118,8 +158,8 @@ export default function() {
 		if (this.directvch3 && this.directvch3.length) {
 			var a = this.directvch3;
 			if (a.length > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch3 length exceeds colferListMax');
-			buf[i++] = 4;
+				throw new Error('colfer: colfer.colfbuf.directvch3 length exceeds colferListMax');
+			buf[i++] = 6;
 			i = encodeVarint(buf, i, a.length);
 			a.forEach(function(f) {
 				view.setFloat64(i, f);
@@ -130,8 +170,80 @@ export default function() {
 		if (this.diffv && this.diffv.length) {
 			var a = this.diffv;
 			if (a.length > colferListMax)
-				throw new Error('colfer: driver.colfbuf.diffv length exceeds colferListMax');
-			buf[i++] = 5;
+				throw new Error('colfer: colfer.colfbuf.diffv length exceeds colferListMax');
+			buf[i++] = 7;
+			i = encodeVarint(buf, i, a.length);
+			a.forEach(function(f) {
+				view.setFloat64(i, f);
+				i += 8;
+			});
+		}
+
+		if (this.heatervch0 && this.heatervch0.length) {
+			var a = this.heatervch0;
+			if (a.length > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heatervch0 length exceeds colferListMax');
+			buf[i++] = 8;
+			i = encodeVarint(buf, i, a.length);
+			a.forEach(function(f) {
+				view.setFloat64(i, f);
+				i += 8;
+			});
+		}
+
+		if (this.heatervch1 && this.heatervch1.length) {
+			var a = this.heatervch1;
+			if (a.length > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heatervch1 length exceeds colferListMax');
+			buf[i++] = 9;
+			i = encodeVarint(buf, i, a.length);
+			a.forEach(function(f) {
+				view.setFloat64(i, f);
+				i += 8;
+			});
+		}
+
+		if (this.diffheaterv && this.diffheaterv.length) {
+			var a = this.diffheaterv;
+			if (a.length > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.diffheaterv length exceeds colferListMax');
+			buf[i++] = 10;
+			i = encodeVarint(buf, i, a.length);
+			a.forEach(function(f) {
+				view.setFloat64(i, f);
+				i += 8;
+			});
+		}
+
+		if (this.heaterpch0 && this.heaterpch0.length) {
+			var a = this.heaterpch0;
+			if (a.length > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heaterpch0 length exceeds colferListMax');
+			buf[i++] = 11;
+			i = encodeVarint(buf, i, a.length);
+			a.forEach(function(f) {
+				view.setFloat64(i, f);
+				i += 8;
+			});
+		}
+
+		if (this.heaterpch1 && this.heaterpch1.length) {
+			var a = this.heaterpch1;
+			if (a.length > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heaterpch1 length exceeds colferListMax');
+			buf[i++] = 12;
+			i = encodeVarint(buf, i, a.length);
+			a.forEach(function(f) {
+				view.setFloat64(i, f);
+				i += 8;
+			});
+		}
+
+		if (this.diffheaterp && this.diffheaterp.length) {
+			var a = this.diffheaterp;
+			if (a.length > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.diffheaterp length exceeds colferListMax');
+			buf[i++] = 13;
 			i = encodeVarint(buf, i, a.length);
 			a.forEach(function(f) {
 				view.setFloat64(i, f);
@@ -142,7 +254,7 @@ export default function() {
 
 		buf[i++] = 127;
 		if (i >= colferSizeMax)
-			throw new Error('colfer: driver.colfbuf serial size ' + i + ' exceeds ' + colferSizeMax + ' bytes');
+			throw new Error('colfer: colfer.colfbuf serial size ' + i + ' exceeds ' + colferSizeMax + ' bytes');
 		return buf.subarray(0, i);
 	}
 
@@ -192,7 +304,7 @@ export default function() {
 			var ns = view.getUint32(i + 8);
 			ms += Math.floor(ns / 1E6);
 			if (ms < -864E13 || ms > 864E13)
-				throw new Error('colfer: driver/ field time exceeds ECMA Date range');
+				throw new Error('colfer: colfer/ field time exceeds ECMA Date range');
 			this.time = new Date(ms);
 			this.time_ns = ns % 1E6;
 
@@ -201,10 +313,29 @@ export default function() {
 		}
 
 		if (header == 1) {
+			if (i + 8 > data.length) throw new Error(EOF);
+			this.interval = view.getFloat64(i);
+			i += 8;
+			readHeader();
+		}
+
+		if (header == 2) {
+			var x = readVarint();
+			if (x < 0) throw new Error('colfer: colfer/Colfbuf field datalength exceeds Number.MAX_SAFE_INTEGER');
+			this.datalength = x;
+			readHeader();
+		} else if (header == (2 | 128)) {
+			var x = readVarint();
+			if (x < 0) throw new Error('colfer: colfer/Colfbuf field datalength exceeds Number.MAX_SAFE_INTEGER');
+			this.datalength = -1 * x;
+			readHeader();
+		}
+
+		if (header == 3) {
 			var l = readVarint();
-			if (l < 0) throw new Error('colfer: driver.colfbuf.directvch0 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.directvch0 length exceeds Number.MAX_SAFE_INTEGER');
 			if (l > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch0 length ' + l + ' exceeds ' + colferListMax + ' elements');
+				throw new Error('colfer: colfer.colfbuf.directvch0 length ' + l + ' exceeds ' + colferListMax + ' elements');
 			if (i + l * 8 > data.length) throw new Error(EOF);
 
 			this.directvch0 = new Float64Array(l);
@@ -215,11 +346,11 @@ export default function() {
 			readHeader();
 		}
 
-		if (header == 2) {
+		if (header == 4) {
 			var l = readVarint();
-			if (l < 0) throw new Error('colfer: driver.colfbuf.directvch1 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.directvch1 length exceeds Number.MAX_SAFE_INTEGER');
 			if (l > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch1 length ' + l + ' exceeds ' + colferListMax + ' elements');
+				throw new Error('colfer: colfer.colfbuf.directvch1 length ' + l + ' exceeds ' + colferListMax + ' elements');
 			if (i + l * 8 > data.length) throw new Error(EOF);
 
 			this.directvch1 = new Float64Array(l);
@@ -230,11 +361,11 @@ export default function() {
 			readHeader();
 		}
 
-		if (header == 3) {
+		if (header == 5) {
 			var l = readVarint();
-			if (l < 0) throw new Error('colfer: driver.colfbuf.directvch2 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.directvch2 length exceeds Number.MAX_SAFE_INTEGER');
 			if (l > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch2 length ' + l + ' exceeds ' + colferListMax + ' elements');
+				throw new Error('colfer: colfer.colfbuf.directvch2 length ' + l + ' exceeds ' + colferListMax + ' elements');
 			if (i + l * 8 > data.length) throw new Error(EOF);
 
 			this.directvch2 = new Float64Array(l);
@@ -245,11 +376,11 @@ export default function() {
 			readHeader();
 		}
 
-		if (header == 4) {
+		if (header == 6) {
 			var l = readVarint();
-			if (l < 0) throw new Error('colfer: driver.colfbuf.directvch3 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.directvch3 length exceeds Number.MAX_SAFE_INTEGER');
 			if (l > colferListMax)
-				throw new Error('colfer: driver.colfbuf.directvch3 length ' + l + ' exceeds ' + colferListMax + ' elements');
+				throw new Error('colfer: colfer.colfbuf.directvch3 length ' + l + ' exceeds ' + colferListMax + ' elements');
 			if (i + l * 8 > data.length) throw new Error(EOF);
 
 			this.directvch3 = new Float64Array(l);
@@ -260,11 +391,11 @@ export default function() {
 			readHeader();
 		}
 
-		if (header == 5) {
+		if (header == 7) {
 			var l = readVarint();
-			if (l < 0) throw new Error('colfer: driver.colfbuf.diffv length exceeds Number.MAX_SAFE_INTEGER');
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.diffv length exceeds Number.MAX_SAFE_INTEGER');
 			if (l > colferListMax)
-				throw new Error('colfer: driver.colfbuf.diffv length ' + l + ' exceeds ' + colferListMax + ' elements');
+				throw new Error('colfer: colfer.colfbuf.diffv length ' + l + ' exceeds ' + colferListMax + ' elements');
 			if (i + l * 8 > data.length) throw new Error(EOF);
 
 			this.diffv = new Float64Array(l);
@@ -275,9 +406,99 @@ export default function() {
 			readHeader();
 		}
 
+		if (header == 8) {
+			var l = readVarint();
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.heatervch0 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heatervch0 length ' + l + ' exceeds ' + colferListMax + ' elements');
+			if (i + l * 8 > data.length) throw new Error(EOF);
+
+			this.heatervch0 = new Float64Array(l);
+			for (var n = 0; n < l; ++n) {
+				this.heatervch0[n] = view.getFloat64(i);
+				i += 8;
+			}
+			readHeader();
+		}
+
+		if (header == 9) {
+			var l = readVarint();
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.heatervch1 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heatervch1 length ' + l + ' exceeds ' + colferListMax + ' elements');
+			if (i + l * 8 > data.length) throw new Error(EOF);
+
+			this.heatervch1 = new Float64Array(l);
+			for (var n = 0; n < l; ++n) {
+				this.heatervch1[n] = view.getFloat64(i);
+				i += 8;
+			}
+			readHeader();
+		}
+
+		if (header == 10) {
+			var l = readVarint();
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.diffheaterv length exceeds Number.MAX_SAFE_INTEGER');
+			if (l > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.diffheaterv length ' + l + ' exceeds ' + colferListMax + ' elements');
+			if (i + l * 8 > data.length) throw new Error(EOF);
+
+			this.diffheaterv = new Float64Array(l);
+			for (var n = 0; n < l; ++n) {
+				this.diffheaterv[n] = view.getFloat64(i);
+				i += 8;
+			}
+			readHeader();
+		}
+
+		if (header == 11) {
+			var l = readVarint();
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.heaterpch0 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heaterpch0 length ' + l + ' exceeds ' + colferListMax + ' elements');
+			if (i + l * 8 > data.length) throw new Error(EOF);
+
+			this.heaterpch0 = new Float64Array(l);
+			for (var n = 0; n < l; ++n) {
+				this.heaterpch0[n] = view.getFloat64(i);
+				i += 8;
+			}
+			readHeader();
+		}
+
+		if (header == 12) {
+			var l = readVarint();
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.heaterpch1 length exceeds Number.MAX_SAFE_INTEGER');
+			if (l > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.heaterpch1 length ' + l + ' exceeds ' + colferListMax + ' elements');
+			if (i + l * 8 > data.length) throw new Error(EOF);
+
+			this.heaterpch1 = new Float64Array(l);
+			for (var n = 0; n < l; ++n) {
+				this.heaterpch1[n] = view.getFloat64(i);
+				i += 8;
+			}
+			readHeader();
+		}
+
+		if (header == 13) {
+			var l = readVarint();
+			if (l < 0) throw new Error('colfer: colfer.colfbuf.diffheaterp length exceeds Number.MAX_SAFE_INTEGER');
+			if (l > colferListMax)
+				throw new Error('colfer: colfer.colfbuf.diffheaterp length ' + l + ' exceeds ' + colferListMax + ' elements');
+			if (i + l * 8 > data.length) throw new Error(EOF);
+
+			this.diffheaterp = new Float64Array(l);
+			for (var n = 0; n < l; ++n) {
+				this.diffheaterp[n] = view.getFloat64(i);
+				i += 8;
+			}
+			readHeader();
+		}
+
 		if (header != 127) throw new Error('colfer: unknown header at byte ' + (i - 1));
 		if (i > colferSizeMax)
-			throw new Error('colfer: driver.colfbuf serial size ' + size + ' exceeds ' + colferSizeMax + ' bytes');
+			throw new Error('colfer: colfer.colfbuf serial size ' + size + ' exceeds ' + colferSizeMax + ' bytes');
 		return i;
 	}
 

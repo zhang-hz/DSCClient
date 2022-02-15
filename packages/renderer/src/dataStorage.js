@@ -1,9 +1,13 @@
 export let dataTemp =  {
     timeOffset:0,
-    voltage:[[],[],[],[],[]]
+    voltage:[[],[],[],[],[]],
+    heater:[[],[],[]],
+    power:[[],[],[]]
 }
 
 export let dataStorage = {
     timeOffset:0,
-    voltage:[[],[],[],[],[]]
+    voltage:[[],[],[],[],[]],
+    heater:[[],[],[]],
+    power:[[],[],[]]
 }

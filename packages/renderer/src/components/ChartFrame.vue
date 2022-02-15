@@ -3,111 +3,131 @@
         <main-chart></main-chart>
     </div>
     <div class="chartrow">
-        <div
-            class="chartcol"
-            id="echart-assist1"
-        ></div>
-        <div
-            class="chartcol"
-            id="echart-assist2"
-        ></div>
-        <div
-            class="chartcol"
-            id="echart-assist3"
-        ></div>
+        <div class="chartcol" id="echart-assist1"></div>
+        <div class="chartcol" id="echart-assist2"></div>
+        <div class="chartcol" id="echart-assist3"></div>
     </div>
 </template>
 
 <script>
 import { computed, defineComponent } from "vue";
 import MainChart from "/@/components/MainChart.vue";
-import {dataTemp, dataStorage} from '/@/dataStorage.js'
+import { dataTemp, dataStorage } from "/@/dataStorage.js";
 
-const print = console
+const print = console;
 
 export default defineComponent({
     name: "ChartFrame",
     components: {
         MainChart,
     },
-    inject:["timeOffset","chartSwitch"],
-    provide(){
-        return{
-        }
+    inject: ["timeOffset", "chartSwitch"],
+    provide() {
+        return {};
     },
     mounted() {
-        let self = this
+        let self = this;
 
         window.ipcRenderer.on("socketData", (event, message) => {
-            if(!self.chartSwitch.value){
-                return
+            if (!self.chartSwitch.value) {
+                return;
             }
             let startTime = event.time.getTime() + event.time_ns / 1000000;
-            if(self.justStart){
-                self.resetData()
-                self.data.timeOffset = startTime
-                dataTemp.timeOffset = startTime
-                dataStorage.timeOffset = startTime
-                self.justStart = false
+            if (self.justStart) {
+                self.resetData();
+                self.data.timeOffset = startTime;
+                dataTemp.timeOffset = startTime;
+                dataStorage.timeOffset = startTime;
+                self.justStart = false;
             }
 
-            let timeOffset = self.data.timeOffset
+            let timeOffset = self.data.timeOffset;
+            let dataLength = event.dataLength;
+            let interval = event.interval;
             let voltage = event.voltage;
+            let heater = event.heater;
+            let power = event.power;
             let time = 0;
             let vtemp = 0;
-            for(let n = 0;n < voltage.length; n++){
-                for (let i = 0; i < voltage[n].length; i++) {
-                    time = startTime + i * 0.02 - timeOffset
-                    vtemp = voltage[n][i]/1e6
-                    if(i == 0||i==250){
-                        dataTemp.voltage[n].push([time, vtemp])
+            let htemp = 0;
+            let ptemp = 0;
+
+
+            let n = 0;
+
+            for (let i = 0; i < dataLength; i++) {
+
+                time = startTime + i * interval/1e6 - timeOffset;
+                n = 0;
+                
+                for (n = 0; n < voltage.length; n++) {
+                    vtemp = voltage[n][i] / 1e6;
+                    if (i % 50 == 0) {
+                        dataTemp.voltage[n].push([time, vtemp]);
                     }
-                    if( i%10 == 0 ){
-                        dataStorage.voltage[n].push([time, vtemp])
+                    dataStorage.voltage[n].push([time, vtemp]);
+                }
+
+                for (n = 0; n < heater.length; n++) {
+                    htemp = heater[n][i] / 1e6;
+                    if (i % 50 == 0) {
+                        dataTemp.heater[n].push([time, htemp]);
                     }
+                    dataStorage.heater[n].push([time, htemp]);
+                }
+
+                for (n = 0; n < power.length; n++) {
+                    ptemp = power[n][i] / 1e6;
+                    if (i % 50 == 0) {
+                        dataTemp.power[n].push([time, ptemp]);
+                    }
+                    dataStorage.power[n].push([time, ptemp]);
                 }
             }
-            
-            return
+
+            return;
         });
     },
-    data(){
-        return{
-            data:{
-                timeOffset:0
+    data() {
+        return {
+            data: {
+                timeOffset: 0,
             },
-            justStart:true,
-
-        }
+            justStart: true,
+        };
     },
-    methods:{
-        startChartEvent(){
-            this.resetData()
-            this.justStart = true
+    methods: {
+        startChartEvent() {
+            this.resetData();
+            this.justStart = true;
         },
-        stopChartEvent(){
+        stopChartEvent() {},
+        resetChartEvent() {
+            this.resetData();
         },
-        resetChartEvent(){
-            this.resetData()
-        },
-        async saveDataToFile(path){
-            await window.dataSaver.excel({
-                setting:{
-                    timeOffset:dataStorage.timeOffset
+        async saveDataToFile(path) {
+            await window.dataSaver.csv(
+                {
+                    setting: {
+                        timeOffset: dataStorage.timeOffset,
+                    },
+                    sheet: {
+                        voltage: dataStorage.voltage,
+                        heater:dataStorage.heater,
+                        power:dataStorage.power
+                    },
                 },
-                sheet:{
-                    voltage:dataStorage.voltage
-                }
-            },path)
+                path
+            );
         },
-        resetData(){
-            dataTemp.voltage = [[],[],[],[],[]]
-            dataTemp.timeOffset = 0
-            this.data.timeOffset = 0
-            dataStorage.voltage = [[],[],[],[],[]]
-            dataStorage.timeOffset = 0
-        }
-    }
+        resetData() {
+            dataTemp.voltage = [[], [], [], [], []];
+            dataTemp.timeOffset = 0;
+            this.data.timeOffset = 0;
+            dataStorage.voltage = [[], [], [], [], []];
+            dataStorage.timeOffset = 0;
+        },
+    },
 });
 </script>
 

@@ -48,7 +48,7 @@ export default defineComponent({
                         },
                     ],
                 });
-            }, 60);
+            }, 200);
         },
     },
     data() {
@@ -88,6 +88,7 @@ export default defineComponent({
                 },
                 yAxis: {
                     type: "value",
+                    scale:true,
                     splitLine: {
                         show: true,
                         lineStyle:{

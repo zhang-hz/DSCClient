@@ -21,12 +21,12 @@ export default class socket{
             host: "192.168.3.1",
             port: 4567,
             onread:{
-                buffer:new Uint8Array(30000),
+                buffer:new Uint8Array(50000),
                 callback: function(n,buf){
 
                     self.bufferStorage = concatenate(self.bufferStorage,buf.slice(0,n))
                     
-                    if( self.bufferStorage.length >= 19985) {
+                    if( self.bufferStorage.length >= 43967) {
                         let colfbuf= new Colfer.Colfbuf()
                         try {
                             colfbuf.unmarshal(self.bufferStorage)
@@ -39,7 +39,11 @@ export default class socket{
                             self.win.webContents.send('socketData',{
                                 time:colfbuf.time,
                                 time_ns:colfbuf.time_ns,
-                                voltage:[colfbuf.directvch0,colfbuf.directvch1,colfbuf.directvch2,colfbuf.directvch3,colfbuf.diffv]
+                                interval:colfbuf.interval,
+                                dataLength:colfbuf.datalength,
+                                voltage:[colfbuf.directvch0,colfbuf.directvch1,colfbuf.directvch2,colfbuf.directvch3,colfbuf.diffv],
+                                heater:[colfbuf.heatervch0, colfbuf.heatervch1, colfbuf.diffheaterv],
+                                power:[colfbuf.heaterpch0, colfbuf.heaterpch1, colfbuf.diffheaterp]
                             })
                         }
                         self.bufferStorage = new Uint8Array(0)

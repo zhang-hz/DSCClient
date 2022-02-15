@@ -1,9 +1,9 @@
 const {ipcRenderer } = require('electron');
-const { writeFile } = require('fs/promises');
-const ExcelJS  = require('exceljs');
+const { writeFile , appendFile } = require('fs/promises');
+import {stringify} from 'csv-stringify/browser/esm/sync'
 
 
-ipcRenderer.on('saveDataToXLSX', async function(e,message){
+ipcRenderer.on('saveDataToCSV', async function(e,message){
 
     let args = JSON.parse(message)
     saveDataToXLSX(args.data,args.path)
@@ -12,19 +12,17 @@ ipcRenderer.on('saveDataToXLSX', async function(e,message){
 
 const saveDataToXLSX = async function(data,path){
 
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'Zhang Haozhi';
-    workbook.lastModifiedBy = 'Zhang Haozhi';
-    workbook.created = new Date();
-    workbook.modified = new Date();
-
-    const dataSheet = workbook.addWorksheet('Data');
-    const settingSheet = workbook.addWorksheet('Setting');
-
     let cataloags = []
     let maxLength = 0
     let rowTemp = []
+    let sheetTemp = []
     let dataTemp = []
+
+    try{
+        await writeFile(path,'')
+    }catch(e){
+        console.error(e)
+    }
 
     for(let key in data.sheet){
         cataloags.push(key)
@@ -38,6 +36,8 @@ const saveDataToXLSX = async function(data,path){
             }
         }
     }
+
+    sheetTemp = []
 
     for(let i = 0 ;i < maxLength; i++){
         rowTemp = []
@@ -63,19 +63,25 @@ const saveDataToXLSX = async function(data,path){
             
             
         }
-        dataSheet.addRow(rowTemp)
+        sheetTemp.push(rowTemp)
+        if(sheetTemp.length >= 10000){
+            try{
+                await appendFile(path, stringify(sheetTemp,{delimiter: ','}))
+            }catch(e){
+                console.error(e)
+            }
+            sheetTemp = []
+        }
+
+    }
+    if(sheetTemp.length > 0){
+        try{
+            await appendFile(path, stringify(sheetTemp,{delimiter: ','}))
+        }catch(e){
+            console.error(e)
+        }
+        sheetTemp = []
     }
 
-    settingSheet.addRow(["Time Offset(UNIX TimeStamp ms)", data.setting.timeOffset])
-    settingSheet.addRow(["Time Offset(Real Time)", new Date(data.setting.timeOffset).toLocaleString()])
-    settingSheet.addRow(["Voltage Unit", "mV"])
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    try{
-        await writeFile(path,buffer)
-    }catch(e){
-        console.error(e)
-    }
-    
     return   
 }

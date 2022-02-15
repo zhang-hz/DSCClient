@@ -34,7 +34,7 @@ export default function (mainWindow, helperWindow){
     ipcMain.handle('showOpenDialog', async (event, prepath) => {
         const result = await dialog.showSaveDialog({
             defaultPath:prepath,
-            filters:[{ name: 'Data Sheet', extensions: ['xlsx'] }],
+            filters:[{ name: 'Data Sheet', extensions: ['csv'] }],
             properties: ['createDirectory','showOverwriteConfirmation']
         })
         return result

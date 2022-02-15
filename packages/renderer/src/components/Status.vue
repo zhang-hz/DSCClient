@@ -139,7 +139,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { Select, CloseBold } from "@element-plus/icons";
+import { Select, CloseBold } from "@element-plus/icons-vue";
 
 const print = console
 
@@ -303,6 +303,7 @@ export default defineComponent({
     margin-left: 4px;
 }
 .statusicon > .el-button.is-circle {
+    height: 50px;
 }
 .statusicon > .el-button.is-circle i {
     font-size: 30px;

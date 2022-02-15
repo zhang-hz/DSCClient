@@ -1,4 +1,6 @@
 import {contextBridge, ipcRenderer } from 'electron';
+const path = require('path');
+const {platform} = require('process');
 
 /**
  * The "Main World" is the JavaScript context that your main renderer code runs in.
@@ -32,14 +34,18 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 });
 
 contextBridge.exposeInMainWorld('dataSaver', {
-    excel:(data,path) =>{
-        ipcRenderer.send('helperipc','saveDataToXLSX',JSON.stringify({
-            data:data,
-            path:path
+    csv:(data,filePath) =>{
+        ipcRenderer.send('helperipc','saveDataToCSV',JSON.stringify({
+            "data":data,
+            "path":filePath
         }))
     },
     selectPath:async (prepath)=>{
-        let path = await ipcRenderer.invoke('showOpenDialog',prepath)
-        return path
+        let filePath = await ipcRenderer.invoke('showOpenDialog',prepath)
+        return filePath
+    },
+    path:path,
+    defaultPath:()=>{
+        return platform == "win32"?"C:\\Data":"~/"
     }
 });
