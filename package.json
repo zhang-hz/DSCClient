@@ -51,6 +51,6 @@
     "element-plus": "^2.0.2",
     "@element-plus/icons-vue": "^0.2.7",
     "exceljs": "^4.3.0",
-    "csv-stringify":"^6.0.5"
+    "csv-stringify": "^6.0.5"
   }
 }
