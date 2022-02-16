@@ -100,14 +100,15 @@ export default defineComponent({
                 let check = await res.json().voltage;
                 return check;
             },
-            async startHeaterStatic(temperature){
+            async startHeaterStatic(temperature, baseVoltage){
+
                 try {
                     await fetch(
                         "http://" +
                             self.httpAddr +
                             self.apiPref +
                             "/heater/static/start/" +
-                            temperature
+                            temperature+"/"+baseVoltage
                     );
                 } catch (e) {
                     print.error(e);
@@ -133,7 +134,7 @@ export default defineComponent({
                         "http://" +
                             self.httpAddr +
                             self.apiPref +
-                            "/heater/static/temperature/" +
+                            "/heater/pid/temperature/" +
                             temperature
                     );
                 } catch (e) {
@@ -154,14 +155,14 @@ export default defineComponent({
                             "/" +
                             pidsetting.kd +
                             "/" +
-                            pidsetting.tolerence +
+                            pidsetting.tolerance +
                             "/" +
-                            pidsetting.errorTolerence
+                            pidsetting.errorTolerance
                     );
                 } catch (e) {
                     print.error(e);
                     return;
-                    
+
                 }                
             }
         };

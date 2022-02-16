@@ -327,9 +327,9 @@ export default defineComponent({
     width: 100%;
 }
 .statusinput #dacinput {
-    width: 180px;
+    
 }
 .statusbutton.dacbutton {
-    width: 83px;
+    width: 80px;
 }
 </style>

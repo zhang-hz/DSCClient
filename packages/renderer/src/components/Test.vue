@@ -143,7 +143,7 @@
                 <el-input v-model="pid.tolerance" placeholder="Tolerence">
                     <template #prepend class="testinputappend">Tr</template>
                 </el-input>
-                <el-input v-model="pid.kd" placeholder="ErrorTolerence">
+                <el-input v-model="pid.errorTolerance" placeholder="ErrorTolerance">
                     <template #prepend class="testinputappend">ET</template>
                 </el-input>
                 </el-row>
@@ -155,6 +155,12 @@
                     id="testpidsetting" 
                     @click="setupHeaterPIDParametersLocal">
                     设定
+                </el-button>
+                <el-button
+                    class="testbutton"
+                    id="testpidsetting" 
+                    @click="getHeaterPIDParametersLocal">
+                    获取
                 </el-button>
                 </el-row>
         </el-row>
@@ -175,6 +181,7 @@ export default defineComponent({
         "resetChart",
         "settingChart",
         "saveData",
+        "fetchAvgVoltage",
         "startHeaterStatic",
         "stopHeaterStatic",
         "setupHeaterTemperature",
@@ -201,7 +208,8 @@ export default defineComponent({
             });
         },
         async startHeaterStaticLocal(){
-            await this.startHeaterStatic(this.heater.temperature)
+            let baseVoltage = await this.fetchAvgVoltage();
+            await this.startHeaterStatic(this.heater.temperature, baseVoltage[1])
             this.heater.started= true
         },
         async stopHeaterStaticLocal(){
@@ -259,7 +267,7 @@ export default defineComponent({
                 ki: 0,
                 kd: 0,
                 tolerance: 600000,
-                errorTolerance: 50000,
+                errorTolerance: 1200000,
             },
             chart: {
                 postion: {

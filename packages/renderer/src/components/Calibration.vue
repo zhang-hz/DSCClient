@@ -17,11 +17,9 @@
           :active="activeStep"
           finish-status="success"
         >
-          <el-step title="校准信号通道" description="插入校准板1"></el-step>
-          <el-step title="校准反馈通道1" description="插入校准板1"></el-step>
-          <el-step title="校准反馈通道2" description="插入校准板1"></el-step>
-          <el-step title="校准功率通道1" description="插入校准板3"></el-step>
-          <el-step title="校准功率通道1" description="插入校准板3"></el-step>
+          <el-step title="校准信号通道" description="插入A面"></el-step>
+          <el-step title="校准功率通道" description="插入B面"></el-step>
+          <el-step title="校准反馈通道" description="插入A面"></el-step>
         </el-steps>
       </el-col>
       <el-col id="calibrationaction">
@@ -55,26 +53,6 @@
             >校准</el-button
           ></el-row
         >
-        <el-row class="calibrationbtn"
-          ><el-button
-            plain
-            :type="btnType[3]"
-            :loading="loading[3]"
-            :disabled="disabled[3]"
-            @click="calistep(3)"
-            >校准</el-button
-          ></el-row
-        >
-        <el-row class="calibrationbtn"
-          ><el-button
-            plain
-            :type="btnType[4]"
-            :loading="loading[4]"
-            :disabled="disabled[4]"
-            @click="calistep(4)"
-            >校准</el-button
-          ></el-row
-        >
       </el-col>
     </el-row>
   </div>
@@ -91,9 +69,9 @@ export default defineComponent({
   data() {
     return {
       calibrationStatus: 0,
-      loading: [false, false, false, false, false],
-      disabled: [false, true, true, true, true],
-      btnType: ["default", "default", "default", "default", "default"],
+      loading: [false, false, false],
+      disabled: [false, true, true],
+      btnType: ["default", "default", "default"],
       activeStep: 0,
       alertType: "warning",
       alertTitle: "未校准",
@@ -102,9 +80,9 @@ export default defineComponent({
   methods: {
     resetStatus() {
       this.calibrationStatus = 0;
-      this.loading = [false, false, false, false, false];
-      this.disabled = [false, true, true, true, true];
-      this.btnType = ["default", "default", "default", "default", "default"];
+      this.loading = [false, false, false];
+      this.disabled = [false, true, true];
+      this.btnType = ["default", "default", "default"];
       this.activeStep = 0;
       this.alertType = "warning";
       this.alertTitle = "未校准";
@@ -113,7 +91,7 @@ export default defineComponent({
       this.calibrationStatus = 1;
       this.alertType = "success";
       this.alertTitle = "已校准";
-      this.disabled = [false, true, true, true, true];
+      this.disabled = [false, true, true];
     },
     async calistep(step) {
 
@@ -169,16 +147,17 @@ export default defineComponent({
         
         }
 
-        const calibrateADC = async function(channel,range) {
+        const calibrateADC = async function(channel,range,direction) {
 
             let offset = await getAvgVoltageData(channel);
             let fix = 0
-            await setADCOffset(channel,offset);
+            await setADCOffset(channel,direction*offset);
 
             for( let i=0;i <20;i++){
                 fix = await getAvgVoltageData(channel);
-                offset = offset + fix
-                if(fix < range){
+                console.log(fix)
+                offset = offset + direction*fix
+                if(Math.abs(fix) < range){
                     return true
                 }
                 await setADCOffset(channel,offset);
@@ -209,7 +188,7 @@ export default defineComponent({
             self.activeStep = step + 1;
             self.loading[step] = false;
             self.btnType[step] = "success";
-            if (step < 4) {
+            if (step < 2) {
                 self.disabled[step + 1] = false;
             } else {
                 self.finishCalibration();
@@ -218,8 +197,8 @@ export default defineComponent({
 
         switch (step) {
             case 0:
-                let resultadc0 = await calibrateADC(0,2000)
-                let resultadc1 = await calibrateADC(1,2000)
+                let resultadc0 = await calibrateADC(0,2000,-1);
+                let resultadc1 = await calibrateADC(1,2000,-1);
                 
                 if(resultadc0 && resultadc1){
                     finishStep(self,step)
@@ -232,36 +211,26 @@ export default defineComponent({
             case 1:
 
                 let resultdac0 = await calibrateDAC("TP1",0,-1)
+                let resultdac1 = await calibrateDAC("TP2",1,-1)
 
-                if( resultdac0 ) {
+                if( resultdac0 && resultdac1) {
+                    let resultadc2 = await calibrateADC(2,2000,1)
+                    let resultadc3 = await calibrateADC(3,2000,1)
                     finishStep(self,step)
                 }else{
                     await setDACOffset("TP1",0);
-                    self.loading[step] = false;
-                    self.btnType[step] = "danger";   
-                }
-                break;
-
-            case 2:
-
-                let resultdac1 = await calibrateDAC("TP2",1,1)
-
-                if( resultdac1 ) {
-
-                    await self.setDACVoltage("TP1",0)
-                    await self.setDACVoltage("TP2",0)
-                    let resultadc2 = await calibrateADC(2,10000)
-                    let resultadc3 = await calibrateADC(3,10000)
-                    finishStep(self,step)
-
-                }else{
                     await setDACOffset("TP2",0);
                     self.loading[step] = false;
                     self.btnType[step] = "danger";   
                 }
 
+                await self.setDACVoltage("TP1",0)
+                await self.setDACVoltage("TP2",0)
+                
                 break;
 
+            case 2:
+                finishStep(self,step)
         }
     }
   },
@@ -276,7 +245,7 @@ export default defineComponent({
   margin-bottom: 40px;
 }
 #calibrationstep {
-  height: 500px;
+  height: 250px;
   width: 200px;
   max-width: 200px;
   padding-left: 10px;
