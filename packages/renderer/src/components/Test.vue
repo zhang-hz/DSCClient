@@ -286,6 +286,14 @@ export default defineComponent({
                             value: "voltage",
                             label: "电压信号",
                         },
+                        {
+                            value: "heater",
+                            label: "加热电压",
+                        },
+                        {
+                            value: "power",
+                            label: "加热功率",
+                        },
                     ],
                 },
                 channel: {

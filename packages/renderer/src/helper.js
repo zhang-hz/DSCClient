@@ -3,10 +3,21 @@ const { writeFile , appendFile } = require('fs/promises');
 import {stringify} from 'csv-stringify/browser/esm/sync'
 
 
-ipcRenderer.on('saveDataToCSV', async function(e,message){
+ipcRenderer.on('saveDataToCSV', async function(e,...message){
 
-    let args = JSON.parse(message)
-    saveDataToXLSX(args.data,args.path)
+    let args = message
+    let meta = JSON.parse(args[0])
+    let voltage = JSON.parse(args[1])
+    let heater = JSON.parse(args[2])
+    let power = JSON.parse(args[3])
+    saveDataToXLSX({
+        setting: meta.setting,
+        sheet: {
+            voltage: voltage,
+            heater:heater,
+            power:power
+        },
+    },meta.path)
 
 })
 
@@ -31,11 +42,10 @@ const saveDataToXLSX = async function(data,path){
         for(let c = 0; c < data.sheet[catalog].length;c++){
             let channel = [catalog+c.toString(),...data.sheet[catalog][c]]
             dataTemp.push(channel)
-            if(channel.length > maxLength){
-                maxLength = channel.length
-            }
         }
     }
+
+    maxLength = dataTemp[0].length
 
     sheetTemp = []
 
@@ -48,17 +58,13 @@ const saveDataToXLSX = async function(data,path){
                 }
                 rowTemp.push(dataTemp[k][i])
             }else{
-                if(i < dataTemp[k].length ){
-                    if(k == 0){
-                        rowTemp.push(dataTemp[k][i][0])
-                        rowTemp.push(dataTemp[k][i][1])
-                    }else{
-                        rowTemp.push(dataTemp[k][i][1])
-                    }
-                    
+                if(k == 0){
+                    rowTemp.push(dataTemp[k][i][0])
+                    rowTemp.push(dataTemp[k][i][1])
                 }else{
-                    rowTemp.push(0)
+                    rowTemp.push(dataTemp[k][i][1])
                 }
+                    
             }
             
             

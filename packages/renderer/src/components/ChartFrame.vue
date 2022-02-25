@@ -57,7 +57,7 @@ export default defineComponent({
 
             for (let i = 0; i < dataLength; i++) {
 
-                time = startTime + i * interval/1e6 - timeOffset;
+                time = (startTime + i * interval/1e6 - timeOffset)/1000;
                 n = 0;
                 
                 for (n = 0; n < voltage.length; n++) {
@@ -65,7 +65,9 @@ export default defineComponent({
                     if (i % 50 == 0) {
                         dataTemp.voltage[n].push([time, vtemp]);
                     }
-                    dataStorage.voltage[n].push([time, vtemp]);
+                    if(i % 5 == 0) {
+                        dataStorage.voltage[n].push([time, vtemp]);
+                    }
                 }
 
                 for (n = 0; n < heater.length; n++) {
@@ -73,7 +75,9 @@ export default defineComponent({
                     if (i % 50 == 0) {
                         dataTemp.heater[n].push([time, htemp]);
                     }
-                    dataStorage.heater[n].push([time, htemp]);
+                    if(i % 5 == 0) {
+                        dataStorage.heater[n].push([time, htemp]);
+                    }
                 }
 
                 for (n = 0; n < power.length; n++) {
@@ -81,7 +85,9 @@ export default defineComponent({
                     if (i % 50 == 0) {
                         dataTemp.power[n].push([time, ptemp]);
                     }
-                    dataStorage.power[n].push([time, ptemp]);
+                    if(i % 5 == 0) {
+                        dataStorage.power[n].push([time, ptemp]);
+                    }
                 }
             }
 
@@ -122,9 +128,13 @@ export default defineComponent({
         },
         resetData() {
             dataTemp.voltage = [[], [], [], [], []];
+            dataTemp.heater = [[], [], []];
+            dataTemp.power = [[], [], []];
             dataTemp.timeOffset = 0;
             this.data.timeOffset = 0;
             dataStorage.voltage = [[], [], [], [], []];
+            dataStorage.heater = [[], [], []];
+            dataStorage.power = [[], [], []];
             dataStorage.timeOffset = 0;
         },
     },

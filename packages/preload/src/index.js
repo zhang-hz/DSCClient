@@ -35,10 +35,15 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 
 contextBridge.exposeInMainWorld('dataSaver', {
     csv:(data,filePath) =>{
+
+        let voltageString = JSON.stringify(data.sheet.voltage)
+        let heaterString = JSON.stringify(data.sheet.heater)
+        let powerString = JSON.stringify(data.sheet.power)
+
         ipcRenderer.send('helperipc','saveDataToCSV',JSON.stringify({
-            "data":data,
+            "setting":data.setting,
             "path":filePath
-        }))
+        }),voltageString,heaterString,powerString)
     },
     selectPath:async (prepath)=>{
         let filePath = await ipcRenderer.invoke('showOpenDialog',prepath)

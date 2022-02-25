@@ -24,9 +24,9 @@ export default function (mainWindow, helperWindow){
     ipcMain.on('stopsendtochart',function(e){
         conn.pause()
     })
-    ipcMain.on('helperipc',function(e,func,message){
+    ipcMain.on('helperipc',function(e,func,...message){
         print.log(func)
-        helperWindow.webContents.send(func,message)
+        helperWindow.webContents.send(func,...message)
     })
 
     //invoke
