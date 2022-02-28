@@ -173,7 +173,10 @@ export default defineComponent({
             await self.setDACVoltage(dacChannel,0);
             let offset = await getAvgVoltageData(adcChannel);
 
-            for(let i = 0.6;i < 1.8; i = i+0.1){
+            let maxRange = dacChannel == "TP1"?4:1.8;
+            let maxStep = dacChannel == "TP1"?0.2:0.1;
+
+            for(let i = 0.6;i < maxRange; i = i+maxStep){
                 await setDACOffset(dacChannel,direction*i*offset);
                 await self.setDACVoltage(dacChannel,0);
                 check = await getAvgVoltageData(adcChannel);
@@ -198,7 +201,7 @@ export default defineComponent({
         switch (step) {
             case 0:
                 let resultadc0 = await calibrateADC(0,2000,-1);
-                let resultadc1 = await calibrateADC(1,2000,-1);
+                let resultadc1 = await calibrateADC(1,2000,1);
                 
                 if(resultadc0 && resultadc1){
                     finishStep(self,step)
@@ -210,8 +213,9 @@ export default defineComponent({
 
             case 1:
 
-                let resultdac0 = await calibrateDAC("TP1",0,-1)
                 let resultdac1 = await calibrateDAC("TP2",1,-1)
+                let resultdac0 = await calibrateDAC("TP1",0,-1)
+                
 
                 if( resultdac0 && resultdac1) {
                     let resultadc2 = await calibrateADC(2,2000,1)

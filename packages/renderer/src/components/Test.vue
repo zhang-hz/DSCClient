@@ -175,6 +175,7 @@ const print = console
 export default defineComponent({
     name: "TestCard",
     inject: [
+        "setDACVoltage",
         "chartSwitch",
         "startChart",
         "stopChart",
@@ -208,6 +209,7 @@ export default defineComponent({
             });
         },
         async startHeaterStaticLocal(){
+            await this.setDACVoltage("TP2", 0)
             let baseVoltage = await this.fetchAvgVoltage();
             await this.startHeaterStatic(this.heater.temperature, baseVoltage[1])
             this.heater.started= true
