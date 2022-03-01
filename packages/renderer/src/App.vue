@@ -100,6 +100,34 @@ export default defineComponent({
                 let check = await res.json().voltage;
                 return check;
             },
+            async startHeaterProgram(baseVoltage,heatingSpeed,baseTemperature){
+
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/prog/start/" +
+                            baseVoltage+"/"+heatingSpeed+"/"+baseTemperature
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }                
+            },
+            async stopHeaterProgram(){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/prog/stop"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+                }                
+            },
             async startHeaterStatic(temperature, baseVoltage){
 
                 try {

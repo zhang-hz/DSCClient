@@ -1,4 +1,5 @@
 <template>
+<el-scrollbar>
     <div id="testcard" class="controlcard">
         <el-row id="chartcontrol" class="testitem">
             <el-row class="testtitle">图表</el-row>
@@ -127,7 +128,42 @@
                 </el-button>
             </el-row>
         </el-row>
-                <el-row id="chartcontrol" class="testitem">
+        <el-row id="chartcontrol" class="testitem">
+            <el-row class="testtitle">程序升温</el-row>
+            <el-row class="testrow">
+                <el-row class="testinput">                
+                    <el-input
+                    v-model="progHeater.speed"
+                    placeholder="升温速率"
+                    id="progheaterspeed"
+                ><template #prepend class="testinputappend">升温速率</template>
+                <template #append class="testinputappend">℃/s</template>
+                </el-input>
+                <el-input
+                    v-model="progHeater.baseTemperature"
+                    placeholder="基础温度"
+                    id="progheaterbasetemperature"
+                ><template #prepend class="testinputappend">基础温度</template>
+                <template #append class="testinputappend">℃</template>
+                </el-input></el-row>
+
+            </el-row>
+            <el-row class="testrow">
+                <el-button
+                    :disabled="!progHeater.enable||progHeater.started"
+                    class="testbutton"
+                    @click="startHeaterProgramLocal" >
+                    启动
+                </el-button>
+                <el-button
+                    :disabled="!progHeater.started"
+                    class="testbutton"
+                    @click="stopHeaterProgramLocal">
+                    停止
+                </el-button>
+            </el-row>
+        </el-row>
+        <el-row id="chartcontrol" class="testitem">
             <el-row class="testtitle">控制器设定</el-row>
             <el-row class="testrow">
                 <el-row class="testinput">
@@ -165,6 +201,7 @@
                 </el-row>
         </el-row>
     </div>
+</el-scrollbar>
 </template>
 
 <script>
@@ -183,6 +220,8 @@ export default defineComponent({
         "settingChart",
         "saveData",
         "fetchAvgVoltage",
+        "startHeaterProgram",
+        "stopHeaterProgram",
         "startHeaterStatic",
         "stopHeaterStatic",
         "setupHeaterTemperature",
@@ -208,6 +247,16 @@ export default defineComponent({
                 channel: this.chart.channel.value,
             });
         },
+        async startHeaterProgramLocal(){
+            await this.setDACVoltage("TP2", 0)
+            let baseVoltage = await this.fetchAvgVoltage();
+            await this.startHeaterProgram(baseVoltage[1],this.progHeater.speed,this.progHeater.baseTemperature)
+            this.progHeater.started= true
+        },
+        async stopHeaterProgramLocal(){
+            await this.stopHeaterProgram()
+            this.progHeater.started= false
+        },
         async startHeaterStaticLocal(){
             await this.setDACVoltage("TP2", 0)
             let baseVoltage = await this.fetchAvgVoltage();
@@ -223,6 +272,7 @@ export default defineComponent({
         },
         async setupHeaterPIDParametersLocal(){
             this.heater.enable = true
+            this.progHeater.enable = true
             await this.setupHeaterPIDParameters({
                 kp: this.pid.kp,
                 ki: this.pid.ki,
@@ -261,6 +311,12 @@ export default defineComponent({
             },
             heater:{
                 temperature:120,
+                enable:false,
+                started:false
+            },
+            progHeater:{
+                speed:10,
+                baseTemperature:23,
                 enable:false,
                 started:false
             },
