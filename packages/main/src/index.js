@@ -36,7 +36,7 @@ let helperWindow = null;
 
 const createMainWindow = async () => {
     mainWindow = new BrowserWindow({
-        width: process.platform == 'darwin'?1200:1198,
+        width: process.platform == 'darwin'?1200:1199,
         height: 750,
         useContentSize: true,
         show: false,
@@ -188,12 +188,4 @@ app.whenReady()
     .then(handleClose)
     .catch((e) => print.error('Failed create window:', e));
 
-
-// Auto-updates
-if (import.meta.env.PROD) {
-    app.whenReady()
-        .then(() => import('electron-updater'))
-        .then(({ autoUpdater }) => autoUpdater.checkForUpdatesAndNotify())
-        .catch((e) => print.error('Failed check updates:', e));
-}
 

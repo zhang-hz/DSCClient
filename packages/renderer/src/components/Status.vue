@@ -67,8 +67,8 @@
         </el-row>
         <el-row class="statusitem">
             <el-row class="statustitle">读取平均电压</el-row>
-            <el-row class="statusinput">
-                <el-table :data="voltageData" >
+            <el-row class="statusinput" id="statusavgdata">
+                <el-table :data="voltageData">
                     <el-table-column
                         prop="channel"
                         label="Channel"
@@ -105,8 +105,8 @@
                             placeholder="Select"
                             style="width: 80px"
                         >
-                            <el-option label="TP1" value="0"></el-option>
-                            <el-option label="TP2" value="1"></el-option>
+                            <el-option label="COM" value="1"></el-option>
+                            <el-option label="DIF" value="0"></el-option>
                         </el-select>
                     </template>
                 </el-input>
@@ -163,7 +163,7 @@ export default defineComponent({
             },
             dac: {
                 voltage: 0,
-                select: "0",
+                select: "1",
                 label: ["TP1", "TP2"],
                 storage: [0, 0],
             },
@@ -325,6 +325,9 @@ export default defineComponent({
 .statusinput {
     padding: 0px 0 16px 0;
     width: 100%;
+}
+#statusavgdata {
+    font-family:"Microsoft Yahei", Helvetica, sans-serif;
 }
 .statusinput #dacinput {
     

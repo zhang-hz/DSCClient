@@ -55,7 +55,7 @@ export default defineComponent({
         return {
             option: {
                 title: {
-                    text: "Driect Voltage CH0",
+                    text: "Main Chart",
                 },
                 xAxis: {
                     type: "value",
@@ -109,7 +109,7 @@ export default defineComponent({
                 },
                 grid: {
                     show: true,
-                    left: "45px",
+                    left: "50px",
                     right: "45px",
                     bottom:"70px",
                     top:"45px"

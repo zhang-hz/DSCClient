@@ -1,8 +1,8 @@
 {
-  "name": "DSC-Library-Kit",
+  "name": "DSC-Laboratory-Kit",
   "author": "Zhang Haozhi",
   "description": "Software for MIS-DSC Experment System",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "private": true,
   "engines": {
     "node": ">=v16.13",
@@ -26,14 +26,14 @@
     "appId": "com.zhanghaozhi.dsckit"
   },
   "browserslist": [
-    "Chrome 96"
+    "Chrome 102"
   ],
   "devDependencies": {
     "@vitejs/plugin-vue": "1.10.2",
     "cross-env": "7.0.3",
     "concurrently": "^6.4.0",
-    "electron": "16.0.4",
-    "electron-builder": "22.14.5",
+    "electron": "19.0.8",
+    "electron-builder": "23.1.0",
     "electron-devtools-installer": "3.2.0",
     "rollup-plugin-copy": "^3.4.0",
     "eslint": "8.4.1",
@@ -45,12 +45,11 @@
   },
   "dependencies": {
     "electron-updater": "4.6.5",
-    "vue": "3.2.24",
-    "vue-router": "4.0.12",
-    "echarts": "^5.2.2",
-    "element-plus": "^2.0.2",
-    "@element-plus/icons-vue": "^0.2.7",
-    "exceljs": "^4.3.0",
+    "vue": "3.2.37",
+    "vue-router": "4.1.2",
+    "echarts": "^5.3.3",
+    "element-plus": "2.2.9",
+    "@element-plus/icons-vue": "2.0.6",
     "csv-stringify": "^6.0.5"
   }
 }

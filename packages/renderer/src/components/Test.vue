@@ -144,7 +144,7 @@
                     placeholder="基础温度"
                     id="progheaterbasetemperature"
                 ><template #prepend class="testinputappend">基础温度</template>
-                <template #append class="testinputappend">℃</template>
+                <template #append class="testinputappend">&nbsp℃&nbsp</template>
                 </el-input></el-row>
 
             </el-row>
@@ -413,27 +413,30 @@ export default defineComponent({
     margin-left: 0px!important;
     padding: 10px;
 }
+#chartcontrol > div:nth-child(3) > button:nth-child(1) {
+    margin-left: 2px!important;
+}
 .testrow .el-input-group__prepend {
     width: 40px;
 }
 #testchartselect {
-    width: 70px;
+    width: 40px;
 }
 #testcatalogselect {
-    width: 100px;
+    width: 58px;
 }
 #testchannelselect {
-    width: 100px;
+    width: 40px;
 }
 #saverinput{
     width: 198px;
     margin-right:10px;
 }
 #testchartselect.el-input__inner {
-    padding: 0 10px;
+    padding: 0 2px;
 }
 #saverfilename.el-input__inner {
-    padding: 0 10px;
+    padding: 0 5px;
 }
 #savepathselector {
     width: 80px;
