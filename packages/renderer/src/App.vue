@@ -185,7 +185,9 @@ export default defineComponent({
                             "/" +
                             pidsetting.tolerance +
                             "/" +
-                            pidsetting.errorTolerance
+                            pidsetting.errorTolerance + 
+                            "/" + 
+                            pidsetting.initialValue
                     );
                 } catch (e) {
                     print.error(e);

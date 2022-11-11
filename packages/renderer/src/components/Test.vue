@@ -182,6 +182,9 @@
                 <el-input v-model="pid.errorTolerance" placeholder="ErrorTolerance">
                     <template #prepend class="testinputappend">ET</template>
                 </el-input>
+                <el-input v-model="pid.initialValue" placeholder="InitialValue">
+                    <template #prepend class="testinputappend">IV</template>
+                </el-input>
                 </el-row>
                 
             </el-row>
@@ -279,15 +282,17 @@ export default defineComponent({
                 kd: this.pid.kd,
                 tolerance: this.pid.tolerance,
                 errorTolerance: this.pid.errorTolerance,
+                initialValue: this.pid.initialValue
             })
         },
         async getHeaterPIDParametersLocal(){
-            const {kp, ki, kd, tolerance, errorTolerance} = await this.getHeaterPIDParameters()
+            const {kp, ki, kd, tolerance, errorTolerance,initialValue} = await this.getHeaterPIDParameters()
             this.pid.kp = kp
             this.pid.ki = ki
             this.pid.kd = kd
             this.pid.tolerance = tolerance
             this.pid.errorTolerance = errorTolerance
+            this.pid.initialValue = initialValue
         },
         async saveDataToFile(){
 
@@ -326,6 +331,7 @@ export default defineComponent({
                 kd: 0,
                 tolerance: 600000,
                 errorTolerance: 1200000,
+                initialValue:500
             },
             chart: {
                 postion: {
