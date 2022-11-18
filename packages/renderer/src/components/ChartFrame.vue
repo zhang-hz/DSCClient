@@ -65,7 +65,7 @@ export default defineComponent({
                     if (i % 50 == 0) {
                         dataTemp.voltage[n].push([time, vtemp]);
                     }
-                    if(i % 5 == 0) {
+                    if(i % 1 == 0) {
                         dataStorage.voltage[n].push([time, vtemp]);
                     }
                 }
@@ -75,7 +75,7 @@ export default defineComponent({
                     if (i % 50 == 0) {
                         dataTemp.heater[n].push([time, htemp]);
                     }
-                    if(i % 5 == 0) {
+                    if(i % 1 == 0) {
                         dataStorage.heater[n].push([time, htemp]);
                     }
                 }
