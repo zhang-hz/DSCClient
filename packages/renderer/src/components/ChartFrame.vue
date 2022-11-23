@@ -85,7 +85,7 @@ export default defineComponent({
                     if (i % 50 == 0) {
                         dataTemp.power[n].push([time, ptemp]);
                     }
-                    if(i % 5 == 0) {
+                    if(i % 1 == 0) {
                         dataStorage.power[n].push([time, ptemp]);
                     }
                 }
