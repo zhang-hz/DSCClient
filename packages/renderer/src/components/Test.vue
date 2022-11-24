@@ -140,6 +140,20 @@
                 <template #append class="testinputappend">℃/s</template>
                 </el-input>
                 <el-input
+                    v-model="progHeater.cool"
+                    placeholder="降温速率"
+                    id="progcoolspeed"
+                ><template #prepend class="testinputappend">降温速率</template>
+                <template #append class="testinputappend">℃/s</template>
+                </el-input>
+                <el-input
+                    v-model="progHeater.maxTemperature"
+                    placeholder="最高温度"
+                    id="progheatermaxtemperature"
+                ><template #prepend class="testinputappend">最高温度</template>
+                <template #append class="testinputappend">&nbsp℃&nbsp</template>
+                </el-input>
+                <el-input
                     v-model="progHeater.baseTemperature"
                     placeholder="基础温度"
                     id="progheaterbasetemperature"
@@ -253,7 +267,7 @@ export default defineComponent({
         async startHeaterProgramLocal(){
             await this.setDACVoltage("TP2", 0)
             let baseVoltage = await this.fetchAvgVoltage();
-            await this.startHeaterProgram(baseVoltage[1],this.progHeater.speed,this.progHeater.baseTemperature)
+            await this.startHeaterProgram(baseVoltage[1],this.progHeater.speed,this.progHeater.cool,this.progHeater.maxTemperature,this.progHeater.baseTemperature)
             this.progHeater.started= true
         },
         async stopHeaterProgramLocal(){
@@ -321,6 +335,8 @@ export default defineComponent({
             },
             progHeater:{
                 speed:10,
+                cool:10,
+                maxTemperature:400,
                 baseTemperature:23,
                 enable:false,
                 started:false

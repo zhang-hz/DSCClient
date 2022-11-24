@@ -100,7 +100,7 @@ export default defineComponent({
                 let check = await res.json().voltage;
                 return check;
             },
-            async startHeaterProgram(baseVoltage,heatingSpeed,baseTemperature){
+            async startHeaterProgram(baseVoltage,heatingSpeed,coolSpeed,maxTemperature,baseTemperature){
 
                 try {
                     await fetch(
@@ -108,7 +108,7 @@ export default defineComponent({
                             self.httpAddr +
                             self.apiPref +
                             "/heater/prog/start/" +
-                            baseVoltage+"/"+heatingSpeed+"/"+baseTemperature
+                            baseVoltage+"/"+heatingSpeed+"/"+coolSpeed+"/"+maxTemperature+"/"+baseTemperature
                     );
                 } catch (e) {
                     print.error(e);
