@@ -52,6 +52,9 @@ export default defineComponent({
             let htemp = 0;
             let ptemp = 0;
 
+            let recordDownSample = 50;
+            let displayDownSample = 200;
+
 
             let n = 0;
 
@@ -62,30 +65,30 @@ export default defineComponent({
                 
                 for (n = 0; n < voltage.length; n++) {
                     vtemp = voltage[n][i] / 1e6;
-                    if (i % 50 == 0) {
+                    if (i % displayDownSample == 0) {
                         dataTemp.voltage[n].push([time, vtemp]);
                     }
-                    if(i % 1 == 0) {
+                    if(i % recordDownSample == 0) {
                         dataStorage.voltage[n].push([time, vtemp]);
                     }
                 }
 
                 for (n = 0; n < heater.length; n++) {
                     htemp = heater[n][i] / 1e6;
-                    if (i % 50 == 0) {
+                    if (i % displayDownSample == 0) {
                         dataTemp.heater[n].push([time, htemp]);
                     }
-                    if(i % 1 == 0) {
+                    if(i % recordDownSample == 0) {
                         dataStorage.heater[n].push([time, htemp]);
                     }
                 }
 
                 for (n = 0; n < power.length; n++) {
                     ptemp = power[n][i] / 1e6;
-                    if (i % 50 == 0) {
+                    if (i % displayDownSample == 0) {
                         dataTemp.power[n].push([time, ptemp]);
                     }
-                    if(i % 1 == 0) {
+                    if(i % recordDownSample == 0) {
                         dataStorage.power[n].push([time, ptemp]);
                     }
                 }
