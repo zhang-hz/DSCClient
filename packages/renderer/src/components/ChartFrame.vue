@@ -52,7 +52,7 @@ export default defineComponent({
             let htemp = 0;
             let ptemp = 0;
 
-            let recordDownSample = 50;
+            let recordDownSample = 10;
             let displayDownSample = 200;
 
 
