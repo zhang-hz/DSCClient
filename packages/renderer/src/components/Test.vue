@@ -94,6 +94,32 @@
                 </el-col>
             </el-row>
         </el-row>
+        
+        <el-row id="chartcontrol" class="testitem">
+            <el-row class="testtitle">功率补偿</el-row>
+            <el-row class="testrow">
+                <el-col class="testcol" id="saverinput">
+                    <el-select v-model="compensator.start" class="m-2" placeholder="Select">
+                    <el-option
+                        v-for="item in compensator.options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        />
+                    </el-select>
+                </el-col>
+                <el-col class="testcol">
+                <el-button
+                    :disabled="!compensator.enable"
+                    class="testbutton"
+                    @click="setupAutoCompensatorLocal"
+                    id="testsaverbutton"
+
+                    >设定</el-button
+                >
+                </el-col>
+            </el-row>
+        </el-row>
         <el-row id="chartcontrol" class="testitem">
             <el-row class="testtitle">温度控制</el-row>
             <el-row class="testrow">
@@ -123,7 +149,7 @@
                     :disabled="!heater.enable&&!heater.started"
                     class="testbutton"
                     id="testsaverbutton"
-                    @click="setupHeaterTemperatureLocal" >
+                    @click="setupHeaterStaticTemperatureLocal" >
                     设定
                 </el-button>
             </el-row>
@@ -178,25 +204,25 @@
             </el-row>
         </el-row>
         <el-row id="chartcontrol" class="testitem">
-            <el-row class="testtitle">控制器设定</el-row>
+            <el-row class="testtitle">闭环控温PID设定</el-row>
             <el-row class="testrow">
                 <el-row class="testinput">
-                <el-input v-model="pid.kp" placeholder="Kp">
+                <el-input v-model="heaterPID.kp" placeholder="Kp">
                     <template #prepend class="testinputappend">P</template>
                 </el-input>
-                <el-input v-model="pid.ki" placeholder="Ki">
+                <el-input v-model="heaterPID.ki" placeholder="Ki">
                     <template #prepend class="testinputappend">I</template>
                 </el-input>
-                <el-input v-model="pid.kd" placeholder="Kd">
+                <el-input v-model="heaterPID.kd" placeholder="Kd">
                     <template #prepend class="testinputappend">D</template>
                 </el-input>
-                <el-input v-model="pid.tolerance" placeholder="Tolerence">
+                <el-input v-model="heaterPID.tolerance" placeholder="Tolerence">
                     <template #prepend class="testinputappend">Tr</template>
                 </el-input>
-                <el-input v-model="pid.errorTolerance" placeholder="ErrorTolerance">
+                <el-input v-model="heaterPID.errorTolerance" placeholder="ErrorTolerance">
                     <template #prepend class="testinputappend">ET</template>
                 </el-input>
-                <el-input v-model="pid.initialValue" placeholder="InitialValue">
+                <el-input v-model="heaterPID.initialValue" placeholder="InitialValue">
                     <template #prepend class="testinputappend">IV</template>
                 </el-input>
                 </el-row>
@@ -213,6 +239,47 @@
                     class="testbutton"
                     id="testpidsetting" 
                     @click="getHeaterPIDParametersLocal">
+                    获取
+                </el-button>
+                </el-row>
+        </el-row>
+
+        <el-row id="chartcontrol" class="testitem">
+            <el-row class="testtitle">功率补偿PID设定</el-row>
+            <el-row class="testrow">
+                <el-row class="testinput">
+                <el-input v-model="compensatorPID.kp" placeholder="Kp">
+                    <template #prepend class="testinputappend">P</template>
+                </el-input>
+                <el-input v-model="compensatorPID.ki" placeholder="Ki">
+                    <template #prepend class="testinputappend">I</template>
+                </el-input>
+                <el-input v-model="compensatorPID.kd" placeholder="Kd">
+                    <template #prepend class="testinputappend">D</template>
+                </el-input>
+                <el-input v-model="compensatorPID.tolerance" placeholder="Tolerence">
+                    <template #prepend class="testinputappend">Tr</template>
+                </el-input>
+                <el-input v-model="compensatorPID.errorTolerance" placeholder="ErrorTolerance">
+                    <template #prepend class="testinputappend">ET</template>
+                </el-input>
+                <el-input v-model="compensatorPID.initialValue" placeholder="InitialValue">
+                    <template #prepend class="testinputappend">IV</template>
+                </el-input>
+                </el-row>
+                
+            </el-row>
+            <el-row class="testrow">
+                <el-button
+                    class="testbutton"
+                    id="testpidsetting" 
+                    @click="setupCompensatorPIDParametersLocal">
+                    设定
+                </el-button>
+                <el-button
+                    class="testbutton"
+                    id="testpidsetting" 
+                    @click="getCompensatorPIDParametersLocal">
                     获取
                 </el-button>
                 </el-row>
@@ -241,9 +308,13 @@ export default defineComponent({
         "stopHeaterProgram",
         "startHeaterStatic",
         "stopHeaterStatic",
-        "setupHeaterTemperature",
+        "setupHeaterStaticTemperature",
         "setupHeaterPIDParameters",
         "getHeaterPIDParameters",
+        "setupCompensatorPIDParameters",
+        "getCompensatorPIDParameters",
+        "startAutoCompensator",
+        "stopAutoCompensator",
     ],
     methods: {
         startMonitor() {
@@ -258,10 +329,26 @@ export default defineComponent({
             this.resetChart();
         },
         setMonitor() {
+            let catalogName = "";
+            let chanelName = ["敏感热堆","参考热堆","敏感加热器","参考加热器","器件差分"]
+            switch(this.chart.catalog.channel){
+                case "voltage":
+                    catalogName = "输出电压(mV)"
+                    break;
+                case "heater":
+                    catalogName = "加热电压(mV)"
+                    break;
+                case "power":
+                    catalogName = "加热功率(mW)"
+                    break;
+                default:
+                    catalogName = "输出电压(mV)"
+            }
             this.settingChart({
                 chart: this.chart.postion.value,
                 catalog: this.chart.catalog.value,
                 channel: this.chart.channel.value,
+                name:chanelName[this.chart.channel.value]+catalogName
             });
         },
         async startHeaterProgramLocal(){
@@ -284,30 +371,60 @@ export default defineComponent({
             await this.stopHeaterStatic()
             this.heater.started= false
         },
-        async setupHeaterTemperatureLocal(){
-            await this.setupHeaterTemperature(this.heater.temperature)
+        async setupHeaterStaticTemperatureLocal(){
+            await this.setupHeaterStaticTemperature(this.heater.temperature)
+        },
+        async setupAutoCompensatorLocal(){
+            if (this.compensator.start){
+                await this.startAutoCompensator();
+            }else{
+                await this.stopAutoCompensator();
+            }
         },
         async setupHeaterPIDParametersLocal(){
             this.heater.enable = true
             this.progHeater.enable = true
             await this.setupHeaterPIDParameters({
-                kp: this.pid.kp,
-                ki: this.pid.ki,
-                kd: this.pid.kd,
-                tolerance: this.pid.tolerance,
-                errorTolerance: this.pid.errorTolerance,
-                initialValue: this.pid.initialValue
+                kp: this.heaterPID.kp,
+                ki: this.heaterPID.ki,
+                kd: this.heaterPID.kd,
+                tolerance: this.heaterPID.tolerance,
+                errorTolerance: this.heaterPID.errorTolerance,
+                initialValue: this.heaterPID.initialValue
             })
         },
         async getHeaterPIDParametersLocal(){
             const {kp, ki, kd, tolerance, errorTolerance,initialValue} = await this.getHeaterPIDParameters()
-            this.pid.kp = kp
-            this.pid.ki = ki
-            this.pid.kd = kd
-            this.pid.tolerance = tolerance
-            this.pid.errorTolerance = errorTolerance
-            this.pid.initialValue = initialValue
+            this.heaterPID.kp = kp
+            this.heaterPID.ki = ki
+            this.heaterPID.kd = kd
+            this.heaterPID.tolerance = tolerance
+            this.heaterPID.errorTolerance = errorTolerance
+            this.heaterPID.initialValue = initialValue
         },
+
+        async setupCompensatorPIDParametersLocal(){
+            this.compensator.enable = true
+            await this.setupCompensatorPIDParameters({
+                kp: this.compensatorPID.kp,
+                ki: this.compensatorPID.ki,
+                kd: this.compensatorPID.kd,
+                tolerance: this.compensatorPID.tolerance,
+                errorTolerance: this.compensatorPID.errorTolerance,
+                initialValue: this.compensatorPID.initialValue
+            })
+        },
+        async getCompensatorPIDParametersLocal(){
+            const {kp, ki, kd, tolerance, errorTolerance,initialValue} = await this.getCompensatorPIDParameters()
+            this.compensatorPID.kp = kp
+            this.compensatorPID.ki = ki
+            this.compensatorPID.kd = kd
+            this.compensatorPID.tolerance = tolerance
+            this.compensatorPID.errorTolerance = errorTolerance
+            this.compensatorPID.initialValue = initialValue
+        },
+
+
         async saveDataToFile(){
 
             let path = await window.dataSaver.selectPath(window.dataSaver.path.join(this.saver.path, (this.saver.filename!=""?this.saver.filename:"Untitled")+".csv"))
@@ -328,6 +445,20 @@ export default defineComponent({
                 filename: "",
                 path: window.dataSaver.defaultPath(),
             },
+            compensator: {
+                start:false,
+                enable:false,
+                options:[
+                    {
+                        label:"开启",
+                        value:true
+                    },
+                    {
+                        label:"关闭",
+                        value:false
+                    }
+                ]
+            },
             heater:{
                 temperature:120,
                 enable:false,
@@ -341,7 +472,15 @@ export default defineComponent({
                 enable:false,
                 started:false
             },
-            pid: {
+            heaterPID: {
+                kp: 9e-4,
+                ki: 0,
+                kd: 0,
+                tolerance: 600000,
+                errorTolerance: 1200000,
+                initialValue:500
+            },
+            compensatorPID: {
                 kp: 9e-4,
                 ki: 0,
                 kd: 0,
@@ -356,6 +495,18 @@ export default defineComponent({
                         {
                             value: "main",
                             label: "Main",
+                        },
+                        {
+                            value: "assistant1",
+                            label: "S1",
+                        },
+                        {
+                            value: "assistant2",
+                            label: "S2",
+                        },
+                        {
+                            value: "assistant3",
+                            label: "S3",
                         },
                     ],
                 },

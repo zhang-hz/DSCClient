@@ -3,23 +3,33 @@
         <main-chart></main-chart>
     </div>
     <div class="chartrow">
-        <div class="chartcol" id="echart-assist1"></div>
-        <div class="chartcol" id="echart-assist2"></div>
-        <div class="chartcol" id="echart-assist3"></div>
+        <div class="chartcol">
+            <assistant-chart-left></assistant-chart-left>
+        </div>
+        <div class="chartcol">
+            <assistant-chart-mid></assistant-chart-mid>
+        </div>
+        <div class="chartcol">
+            <assistant-chart-right></assistant-chart-right>
+        </div>
     </div>
 </template>
 
 <script>
 import { computed, defineComponent } from "vue";
 import MainChart from "/@/components/MainChart.vue";
+import AssistantChartLeft from "/@/components/AssistantChartLeft.vue";
+import AssistantChartMid from "/@/components/AssistantChartMid.vue";
+import AssistantChartRight from "/@/components/AssistantChartRight.vue";
 import { dataTemp, dataStorage } from "/@/dataStorage.js";
+import { dataDownSampleRate, displayDownSampleRate } from "/@/sampleSetting.js";
 
 const print = console;
 
 export default defineComponent({
     name: "ChartFrame",
     components: {
-        MainChart,
+        MainChart,AssistantChartLeft,AssistantChartMid,AssistantChartRight
     },
     inject: ["timeOffset", "chartSwitch"],
     provide() {
@@ -52,9 +62,6 @@ export default defineComponent({
             let htemp = 0;
             let ptemp = 0;
 
-            let recordDownSample = 10;
-            let displayDownSample = 200;
-
 
             let n = 0;
 
@@ -65,30 +72,30 @@ export default defineComponent({
                 
                 for (n = 0; n < voltage.length; n++) {
                     vtemp = voltage[n][i] / 1e6;
-                    if (i % displayDownSample == 0) {
+                    if (i % displayDownSampleRate == 0) {
                         dataTemp.voltage[n].push([time, vtemp]);
                     }
-                    if(i % recordDownSample == 0) {
+                    if(i % dataDownSampleRate == 0) {
                         dataStorage.voltage[n].push([time, vtemp]);
                     }
                 }
 
                 for (n = 0; n < heater.length; n++) {
                     htemp = heater[n][i] / 1e6;
-                    if (i % displayDownSample == 0) {
+                    if (i % displayDownSampleRate == 0) {
                         dataTemp.heater[n].push([time, htemp]);
                     }
-                    if(i % recordDownSample == 0) {
+                    if(i % dataDownSampleRate == 0) {
                         dataStorage.heater[n].push([time, htemp]);
                     }
                 }
 
                 for (n = 0; n < power.length; n++) {
                     ptemp = power[n][i] / 1e6;
-                    if (i % displayDownSample == 0) {
+                    if (i % displayDownSampleRate == 0) {
                         dataTemp.power[n].push([time, ptemp]);
                     }
-                    if(i % recordDownSample == 0) {
+                    if(i % dataDownSampleRate == 0) {
                         dataStorage.power[n].push([time, ptemp]);
                     }
                 }
@@ -153,5 +160,9 @@ export default defineComponent({
 }
 .chartcol {
     display: flex;
+}
+.echart-assistant {
+    width: 270px;
+    height: 275px;
 }
 </style>

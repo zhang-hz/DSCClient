@@ -55,7 +55,8 @@ export default defineComponent({
 			settingChart(option){
 				self.chart.option[option.chart] = {
 					catalog:option.catalog,
-					channel:option.channel
+					channel:option.channel,
+                    name:option.name
 				}
 			},
 
@@ -156,13 +157,13 @@ export default defineComponent({
                     return;
                 }                
             },
-            async setupHeaterTemperature(temperature){
+            async setupHeaterStaticTemperature(temperature){
                 try {
                     await fetch(
                         "http://" +
                             self.httpAddr +
                             self.apiPref +
-                            "/heater/pid/temperature/" +
+                            "/heater/static/temperature/" +
                             temperature
                     );
                 } catch (e) {
@@ -176,7 +177,7 @@ export default defineComponent({
                         "http://" +
                             self.httpAddr +
                             self.apiPref +
-                            "/heater/pid/parameters/" +
+                            "/heater/pid/common/parameters/" +
                             pidsetting.kp +
                             "/" +
                             pidsetting.ki +
@@ -194,6 +195,87 @@ export default defineComponent({
                     return;
 
                 }                
+            },
+            async setupCompensatorPIDParameters(pidsetting){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/pid/compensator/parameters/" +
+                            pidsetting.kp +
+                            "/" +
+                            pidsetting.ki +
+                            "/" +
+                            pidsetting.kd +
+                            "/" +
+                            pidsetting.tolerance +
+                            "/" +
+                            pidsetting.errorTolerance + 
+                            "/" + 
+                            pidsetting.initialValue
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+
+                }                
+            },
+            async startAutoCompensator(){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/compensator/auto/start"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+
+                }                
+            },
+            async stopAutoCompensator(){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/compensator/auto/stop"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+
+                }                
+            },
+            async startManualCompensator(){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/compensator/manual/start"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+
+                }                
+            },
+            async stopManualCompensator(){
+                try {
+                    await fetch(
+                        "http://" +
+                            self.httpAddr +
+                            self.apiPref +
+                            "/heater/compensator/manual/stop"
+                    );
+                } catch (e) {
+                    print.error(e);
+                    return;
+
+                }                
             }
         };
     },
@@ -205,7 +287,23 @@ export default defineComponent({
 				option:{
 					main:{
 						catalog:"voltage",
-						channel:0
+						channel:0,
+                        name:"敏感热堆输出电压(mV)"
+					},
+                    assistant1:{
+						catalog:"voltage",
+						channel:0,
+                        name:"敏感热堆输出电压(mV)"
+					},
+                    assistant2:{
+						catalog:"voltage",
+						channel:0,
+                        name:"敏感热堆输出电压(mV)"
+					},
+                    assistant3:{
+						catalog:"voltage",
+						channel:0,
+                        name:"敏感热堆输出电压(mV)"
 					}
 				}
 			},

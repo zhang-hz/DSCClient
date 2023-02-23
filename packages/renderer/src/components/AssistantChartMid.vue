@@ -1,5 +1,5 @@
 <template>
-    <div id="echart-main"></div>
+    <div id="echart-assistant2" class="echart-assistant"></div>
 </template>
 
 <script>
@@ -10,8 +10,6 @@ import {
     TitleComponent,
     TooltipComponent,
     GridComponent,
-    ToolboxComponent,
-    DataZoomComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import {dataTemp} from '/@/dataStorage.js'
@@ -20,8 +18,6 @@ echarts.use([
     TitleComponent,
     TooltipComponent,
     GridComponent,
-    ToolboxComponent,
-    DataZoomComponent,
     LineChart,
     CanvasRenderer,
 ]);
@@ -29,18 +25,18 @@ echarts.use([
 const print = console
 
 export default defineComponent({
-    name: "MainChart",
+    name: "AssistantChartMid",
     inject: ["chartOption", "chartSwitch"],
     methods: {
         initChart() {
             let self = this;
-            let chart = echarts.init(document.getElementById("echart-main"));
+            let chart = echarts.init(document.getElementById("echart-assistant2"));
             chart.setOption(self.option);
             setInterval(function () {
                 if (!self.chartSwitch.value) {
                     return;
                 }
-                let option = self.chartOption.value.main;
+                let option = self.chartOption.value.assistant2;
                 chart.setOption({
                     title: {
                         text: option.name,
@@ -58,13 +54,19 @@ export default defineComponent({
         return {
             option: {
                 title: {
-                    text: "Main Chart",
+                    text: "Assistant Chart",
+                    top: 'top',
+                    left:"30%",
+                    textStyle:{
+                        fontSize: 14
+                    }
                 },
                 xAxis: {
                     type: "value",
                     position: "bottom",
-                    splitNumber: 10,
+                    splitNumber: 4,
                     min: 0,
+                    minInterval:1,
                     axisLine:{
                         show:false
                     },
@@ -78,20 +80,21 @@ export default defineComponent({
                         }
                     },
                     minorTick: {
-                        show: true,
+                        show: false,
                         splitNumber:4,
                     },
                     minorSplitLine: {
-                        show: true,
+                        show: false,
                         lineStyle:{
                             color:"#CCC",
                             type:"dashed"
                         }
-                    },
+                    }
                 },
                 yAxis: {
                     type: "value",
                     scale:true,
+                    minInterval:1,
                     splitLine: {
                         show: true,
                         lineStyle:{
@@ -99,11 +102,11 @@ export default defineComponent({
                         }
                     },
                     minorTick: {
-                        show: true,
+                        show: false,
                         splitNumber:4,
                     },
                     minorSplitLine: {
-                        show: true,
+                        show: false,
                         lineStyle:{
                             color:"#CECECE",
                             type:"dashed"
@@ -112,52 +115,15 @@ export default defineComponent({
                 },
                 grid: {
                     show: true,
-                    left: "50px",
-                    right: "45px",
-                    bottom:"70px",
-                    top:"30px"
+                    left: "40px",
+                    right: "0px",
+                    bottom:"30px",
+                    top:"25px"
                 },
-                toolbox: {
-                    show: true,
-                    orient: "horizontal",
-                    showTitle: true,
-                    feature: {
-                        saveAsImage: {
-                            type: "png",
-                            show: true,
-                            pixelRatio: 2,
-                        },
-                        restore: {},
-                        dataZoom: {},
-                    },
-                },
-                dataZoom: [
-                    {
-                        type: "slider",
-                        xAxisIndex: 0,
-                        filterMode: "none",
-                    },
-                    {
-                        type: "slider",
-                        yAxisIndex: 0,
-                        filterMode: "none",
-                        right:"10px"
-                    },
-                    {
-                        type: "inside",
-                        xAxisIndex: 0,
-                        filterMode: "none",
-                    },
-                    {
-                        type: "inside",
-                        yAxisIndex: 0,
-                        filterMode: "none",
-                    },
-                ],
                 animation: false,
                 series: [
                     {
-                        name: "Voltage(nV)",
+                        name: "Voltage(mV)",
                         type: "line",
                         showSymbol: false,
                         data: [],
@@ -174,8 +140,5 @@ export default defineComponent({
 </script>
 
 <style>
-#echart-main {
-    width: 100%;
-    height: 460px;
-}
+
 </style>
