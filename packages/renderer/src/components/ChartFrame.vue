@@ -69,33 +69,36 @@ export default defineComponent({
 
                 time = (startTime + i * interval/1e6 - timeOffset)/1000;
                 n = 0;
+
+                let dataDSR = dataDownSampleRate.value;
+                let displayDSR = displayDownSampleRate.value;
                 
                 for (n = 0; n < voltage.length; n++) {
                     vtemp = voltage[n][i] / 1e6;
-                    if (i % displayDownSampleRate == 0) {
+                    if (i % displayDSR == 0) {
                         dataTemp.voltage[n].push([time, vtemp]);
                     }
-                    if(i % dataDownSampleRate == 0) {
+                    if(i % dataDSR == 0) {
                         dataStorage.voltage[n].push([time, vtemp]);
                     }
                 }
 
                 for (n = 0; n < heater.length; n++) {
                     htemp = heater[n][i] / 1e6;
-                    if (i % displayDownSampleRate == 0) {
+                    if (i % displayDSR == 0) {
                         dataTemp.heater[n].push([time, htemp]);
                     }
-                    if(i % dataDownSampleRate == 0) {
+                    if(i % dataDSR == 0) {
                         dataStorage.heater[n].push([time, htemp]);
                     }
                 }
 
                 for (n = 0; n < power.length; n++) {
                     ptemp = power[n][i] / 1e6;
-                    if (i % displayDownSampleRate == 0) {
+                    if (i % displayDSR == 0) {
                         dataTemp.power[n].push([time, ptemp]);
                     }
-                    if(i % dataDownSampleRate == 0) {
+                    if(i % dataDSR == 0) {
                         dataStorage.power[n].push([time, ptemp]);
                     }
                 }

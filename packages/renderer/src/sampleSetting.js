@@ -1,2 +1,6 @@
-export let dataDownSampleRate = 10;
-export let displayDownSampleRate = 250;
+export let dataDownSampleRate = {
+    value:10
+};
+export let displayDownSampleRate = {
+    value:250
+}

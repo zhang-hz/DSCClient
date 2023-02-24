@@ -378,8 +378,8 @@ export default defineComponent({
             }
         },
         setDownSampleRate(){
-            dataDownSampleRate = this.saveSpeed.downSampleRate;
-            displayDownSampleRate = this.displaySpeed.downSampleRate;
+            dataDownSampleRate.value = this.saveSpeed.downSampleRate;
+            displayDownSampleRate.value = this.displaySpeed.downSampleRate;
         }
     },
 });
