@@ -331,7 +331,7 @@ export default defineComponent({
         setMonitor() {
             let catalogName = "";
             let chanelName = ["敏感热堆","参考热堆","敏感加热器","参考加热器","器件差分"]
-            switch(this.chart.catalog.channel){
+            switch(this.chart.catalog.value){
                 case "voltage":
                     catalogName = "输出电压(mV)"
                     break;
@@ -347,7 +347,7 @@ export default defineComponent({
             this.settingChart({
                 chart: this.chart.postion.value,
                 catalog: this.chart.catalog.value,
-                channel: this.chart.channel.value,
+                channel: this.chart.catalog.value == "voltage"?this.chart.channel.value:(this.chart.channel.value == 4?2:this.chart.channel.value),
                 name:chanelName[this.chart.channel.value]+catalogName
             });
         },
@@ -476,16 +476,16 @@ export default defineComponent({
                 kp: 9e-4,
                 ki: 0,
                 kd: 0,
-                tolerance: 600000,
-                errorTolerance: 1200000,
+                tolerance: 300000,
+                errorTolerance: 100000,
                 initialValue:500
             },
             compensatorPID: {
                 kp: 9e-4,
                 ki: 0,
                 kd: 0,
-                tolerance: 600000,
-                errorTolerance: 1200000,
+                tolerance: 300000,
+                errorTolerance: 100000,
                 initialValue:500
             },
             chart: {

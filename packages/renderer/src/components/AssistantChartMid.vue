@@ -105,6 +105,11 @@ export default defineComponent({
                         show: false,
                         splitNumber:4,
                     },
+                    axisLabel:{
+                        formatter:function(value){
+                            return value.toFixed(1);
+                        }
+                    },
                     minorSplitLine: {
                         show: false,
                         lineStyle:{

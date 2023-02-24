@@ -101,6 +101,11 @@ export default defineComponent({
                             color:"#666"
                         }
                     },
+                    axisLabel:{
+                        formatter:function(value){
+                            return value.toFixed(1);
+                        }
+                    },
                     minorTick: {
                         show: false,
                         splitNumber:4,
