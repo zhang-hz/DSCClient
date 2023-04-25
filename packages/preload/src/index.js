@@ -1,5 +1,6 @@
 import {contextBridge, ipcRenderer } from 'electron';
 const path = require('path');
+const { readFileSync } = require('fs');
 const {platform} = require('process');
 
 /**
@@ -46,11 +47,28 @@ contextBridge.exposeInMainWorld('dataSaver', {
         }),voltageString,heaterString,powerString)
     },
     selectPath:async (prepath)=>{
-        let filePath = await ipcRenderer.invoke('showOpenDialog',prepath)
+        let filePath = await ipcRenderer.invoke('showSaveDialogCSV',prepath)
         return filePath
     },
     path:path,
     defaultPath:()=>{
         return platform == "win32"?"C:\\Data":"~/"
+    }
+});
+
+contextBridge.exposeInMainWorld('heatProgramReader', {
+
+    selectPath:async (prepath)=>{
+        let filePath = await ipcRenderer.invoke('showOpenDialogJSON',prepath)
+        return filePath
+    },
+    path:path,
+    defaultPath:()=>{
+        return platform == "win32"?"C:\\Data":"~/"
+    },
+    readTemperatureProgramFile:(fullPath)=>{
+        let file = readFileSync(fullPath,'utf8')
+        return file
+
     }
 });

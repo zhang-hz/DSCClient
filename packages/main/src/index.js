@@ -129,14 +129,16 @@ app.on('web-contents-created', (_event, contents) => {
      *
      * @see https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
      */
-    contents.on('will-navigate', (event, url) => {
+     contents.on('will-navigate', (event, url) => {
         const allowedOrigins =
-            new Set(); // Do not use insecure protocols like HTTP. https://www.electronjs.org/docs/latest/tutorial/security#1-only-load-secure-content
+            new Set(["https://github.com"]); // Do not use insecure protocols like HTTP. https://www.electronjs.org/docs/latest/tutorial/security#1-only-load-secure-content
         const { origin, hostname } = new URL(url);
         const isDevLocalhost = isDevelopment && hostname === 'localhost'; // permit live reload of index.html
+        event.preventDefault();
         if (!allowedOrigins.has(origin) && !isDevLocalhost) {
             print.warn('Blocked navigating to an unallowed origin:', origin);
-            event.preventDefault();
+        }else{
+            shell.openExternal(url);
         }
     });
 

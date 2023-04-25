@@ -9,21 +9,29 @@
     <el-menu-item index="test" class="nav-item">
         <el-icon :size="40"><video-play /></el-icon>
     </el-menu-item>
+    <el-menu-item index="heat" class="nav-item">
+        <el-icon :size="40"><Sunny /></el-icon>
+    </el-menu-item>
     <el-menu-item index="calibration" class="nav-item">
       <el-icon ><location /></el-icon>
     </el-menu-item>
     <el-menu-item index="status" class="nav-item">
       <el-icon ><setting /></el-icon>
     </el-menu-item>
+    <el-menu-item index="about" class="nav-item">
+      <el-icon ><More /></el-icon>
+    </el-menu-item>
   </el-menu>
 </template>
 
 <script>
-import {defineComponent, ref} from 'vue';
+import {defineComponent, computed,ref} from 'vue';
 import {
   Location,
   VideoPlay,
   Setting,
+  Sunny,
+  More
 } from '@element-plus/icons-vue'
 
 const print = console
@@ -33,7 +41,9 @@ export default defineComponent({
   components: {
     Location,
     VideoPlay,
-    Setting
+    Setting,
+    Sunny,
+    More
   },
   setup(){
     const color = {
@@ -42,6 +52,14 @@ export default defineComponent({
     }
     return {
       color
+    }
+  },
+  provide() {
+        return {};
+    },
+  methods:{
+    test(){
+
     }
   }
 });

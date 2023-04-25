@@ -31,11 +31,20 @@ export default function (mainWindow, helperWindow){
 
     //invoke
 
-    ipcMain.handle('showOpenDialog', async (event, prepath) => {
+    ipcMain.handle('showSaveDialogCSV', async (event, prepath) => {
         const result = await dialog.showSaveDialog({
             defaultPath:prepath,
             filters:[{ name: 'Data Sheet', extensions: ['csv'] }],
             properties: ['createDirectory','showOverwriteConfirmation']
+        })
+        return result
+      })
+
+      ipcMain.handle('showOpenDialogJSON', async (event, prepath) => {
+        const result = await dialog.showOpenDialog({
+            defaultPath:prepath,
+            filters:[{ name: 'Temperature Program', extensions: ['json'] }],
+            properties: ['openFile']
         })
         return result
       })

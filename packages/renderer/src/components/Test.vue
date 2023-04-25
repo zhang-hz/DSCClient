@@ -1,5 +1,4 @@
 <template>
-<el-scrollbar>
     <div id="testcard" class="controlcard">
         <el-row id="chartcontrol" class="testitem">
             <el-row class="testtitle">图表</el-row>
@@ -110,7 +109,7 @@
                 </el-col>
                 <el-col class="testcol">
                 <el-button
-                    :disabled="!compensator.enable"
+                    :disabled="!compensatorStateEnable.value"
                     class="testbutton"
                     @click="setupAutoCompensatorLocal"
                     id="testsaverbutton"
@@ -121,7 +120,7 @@
             </el-row>
         </el-row>
         <el-row id="chartcontrol" class="testitem">
-            <el-row class="testtitle">温度控制</el-row>
+            <el-row class="testtitle">恒温控制</el-row>
             <el-row class="testrow">
                 <el-row class="testinput">                
                     <el-input
@@ -134,19 +133,19 @@
             </el-row>
             <el-row class="testrow">
                 <el-button
-                    :disabled="!heater.enable||heater.started"
+                    :disabled="heaterStateStarted.value||!heaterStateEnable.value"
                     class="testbutton"
                     @click="startHeaterStaticLocal" >
                     启动
                 </el-button>
                 <el-button
-                    :disabled="!heater.started"
+                    :disabled="!heaterStateStarted.value||!heaterStateEnable.value"
                     class="testbutton"
                     @click="stopHeaterStaticLocal">
                     停止
                 </el-button>
                 <el-button
-                    :disabled="!heater.enable&&!heater.started"
+                    :disabled="!heaterStateStarted.value||!heaterStateEnable.value"
                     class="testbutton"
                     id="testsaverbutton"
                     @click="setupHeaterStaticTemperatureLocal" >
@@ -157,135 +156,23 @@
         <el-row id="chartcontrol" class="testitem">
             <el-row class="testtitle">程序升温</el-row>
             <el-row class="testrow">
-                <el-row class="testinput">                
-                    <el-input
-                    v-model="progHeater.speed"
-                    placeholder="升温速率"
-                    id="progheaterspeed"
-                ><template #prepend class="testinputappend">升温速率</template>
-                <template #append class="testinputappend">℃/s</template>
-                </el-input>
-                <el-input
-                    v-model="progHeater.cool"
-                    placeholder="降温速率"
-                    id="progcoolspeed"
-                ><template #prepend class="testinputappend">降温速率</template>
-                <template #append class="testinputappend">℃/s</template>
-                </el-input>
-                <el-input
-                    v-model="progHeater.maxTemperature"
-                    placeholder="最高温度"
-                    id="progheatermaxtemperature"
-                ><template #prepend class="testinputappend">最高温度</template>
-                <template #append class="testinputappend">&nbsp℃&nbsp</template>
-                </el-input>
-                <el-input
-                    v-model="progHeater.baseTemperature"
-                    placeholder="基础温度"
-                    id="progheaterbasetemperature"
-                ><template #prepend class="testinputappend">基础温度</template>
-                <template #append class="testinputappend">&nbsp℃&nbsp</template>
-                </el-input></el-row>
-
-            </el-row>
-            <el-row class="testrow">
                 <el-button
-                    :disabled="!progHeater.enable||progHeater.started"
+                    :disabled="heaterStateStarted.value||!heaterStateEnable.value||!heaterStateProgrammed.value"
                     class="testbutton"
                     @click="startHeaterProgramLocal" >
                     启动
                 </el-button>
                 <el-button
-                    :disabled="!progHeater.started"
+                    :disabled="!heaterStateStarted.value||!heaterStateEnable.value||!heaterStateProgrammed.value"
                     class="testbutton"
                     @click="stopHeaterProgramLocal">
                     停止
                 </el-button>
             </el-row>
-        </el-row>
-        <el-row id="chartcontrol" class="testitem">
-            <el-row class="testtitle">闭环控温PID设定</el-row>
-            <el-row class="testrow">
-                <el-row class="testinput">
-                <el-input v-model="heaterPID.kp" placeholder="Kp">
-                    <template #prepend class="testinputappend">P</template>
-                </el-input>
-                <el-input v-model="heaterPID.ki" placeholder="Ki">
-                    <template #prepend class="testinputappend">I</template>
-                </el-input>
-                <el-input v-model="heaterPID.kd" placeholder="Kd">
-                    <template #prepend class="testinputappend">D</template>
-                </el-input>
-                <el-input v-model="heaterPID.tolerance" placeholder="Tolerence">
-                    <template #prepend class="testinputappend">Tr</template>
-                </el-input>
-                <el-input v-model="heaterPID.errorTolerance" placeholder="ErrorTolerance">
-                    <template #prepend class="testinputappend">ET</template>
-                </el-input>
-                <el-input v-model="heaterPID.initialValue" placeholder="InitialValue">
-                    <template #prepend class="testinputappend">IV</template>
-                </el-input>
-                </el-row>
-                
-            </el-row>
-            <el-row class="testrow">
-                <el-button
-                    class="testbutton"
-                    id="testpidsetting" 
-                    @click="setupHeaterPIDParametersLocal">
-                    设定
-                </el-button>
-                <el-button
-                    class="testbutton"
-                    id="testpidsetting" 
-                    @click="getHeaterPIDParametersLocal">
-                    获取
-                </el-button>
-                </el-row>
+
         </el-row>
 
-        <el-row id="chartcontrol" class="testitem">
-            <el-row class="testtitle">功率补偿PID设定</el-row>
-            <el-row class="testrow">
-                <el-row class="testinput">
-                <el-input v-model="compensatorPID.kp" placeholder="Kp">
-                    <template #prepend class="testinputappend">P</template>
-                </el-input>
-                <el-input v-model="compensatorPID.ki" placeholder="Ki">
-                    <template #prepend class="testinputappend">I</template>
-                </el-input>
-                <el-input v-model="compensatorPID.kd" placeholder="Kd">
-                    <template #prepend class="testinputappend">D</template>
-                </el-input>
-                <el-input v-model="compensatorPID.tolerance" placeholder="Tolerence">
-                    <template #prepend class="testinputappend">Tr</template>
-                </el-input>
-                <el-input v-model="compensatorPID.errorTolerance" placeholder="ErrorTolerance">
-                    <template #prepend class="testinputappend">ET</template>
-                </el-input>
-                <el-input v-model="compensatorPID.initialValue" placeholder="InitialValue">
-                    <template #prepend class="testinputappend">IV</template>
-                </el-input>
-                </el-row>
-                
-            </el-row>
-            <el-row class="testrow">
-                <el-button
-                    class="testbutton"
-                    id="testpidsetting" 
-                    @click="setupCompensatorPIDParametersLocal">
-                    设定
-                </el-button>
-                <el-button
-                    class="testbutton"
-                    id="testpidsetting" 
-                    @click="getCompensatorPIDParametersLocal">
-                    获取
-                </el-button>
-                </el-row>
-        </el-row>
     </div>
-</el-scrollbar>
 </template>
 
 <script>
@@ -309,12 +196,15 @@ export default defineComponent({
         "startHeaterStatic",
         "stopHeaterStatic",
         "setupHeaterStaticTemperature",
-        "setupHeaterPIDParameters",
-        "getHeaterPIDParameters",
-        "setupCompensatorPIDParameters",
-        "getCompensatorPIDParameters",
         "startAutoCompensator",
         "stopAutoCompensator",
+        "setupHeaterState",
+        "setupCompensatorState",
+        "heaterStateEnable",
+        "heaterStateProgrammed",
+        "heaterStateStarted",
+        "compensatorStateEnable",
+        "compensatorStateStarted",
     ],
     methods: {
         startMonitor() {
@@ -354,7 +244,7 @@ export default defineComponent({
         async startHeaterProgramLocal(){
             await this.setDACVoltage("TP2", 0)
             let baseVoltage = await this.fetchAvgVoltage();
-            await this.startHeaterProgram(baseVoltage[1],this.progHeater.speed,this.progHeater.cool,this.progHeater.maxTemperature,this.progHeater.baseTemperature)
+            await this.startHeaterProgram(baseVoltage[0])
             this.progHeater.started= true
         },
         async stopHeaterProgramLocal(){
@@ -381,49 +271,6 @@ export default defineComponent({
                 await this.stopAutoCompensator();
             }
         },
-        async setupHeaterPIDParametersLocal(){
-            this.heater.enable = true
-            this.progHeater.enable = true
-            await this.setupHeaterPIDParameters({
-                kp: this.heaterPID.kp,
-                ki: this.heaterPID.ki,
-                kd: this.heaterPID.kd,
-                tolerance: this.heaterPID.tolerance,
-                errorTolerance: this.heaterPID.errorTolerance,
-                initialValue: this.heaterPID.initialValue
-            })
-        },
-        async getHeaterPIDParametersLocal(){
-            const {kp, ki, kd, tolerance, errorTolerance,initialValue} = await this.getHeaterPIDParameters()
-            this.heaterPID.kp = kp
-            this.heaterPID.ki = ki
-            this.heaterPID.kd = kd
-            this.heaterPID.tolerance = tolerance
-            this.heaterPID.errorTolerance = errorTolerance
-            this.heaterPID.initialValue = initialValue
-        },
-
-        async setupCompensatorPIDParametersLocal(){
-            this.compensator.enable = true
-            await this.setupCompensatorPIDParameters({
-                kp: this.compensatorPID.kp,
-                ki: this.compensatorPID.ki,
-                kd: this.compensatorPID.kd,
-                tolerance: this.compensatorPID.tolerance,
-                errorTolerance: this.compensatorPID.errorTolerance,
-                initialValue: this.compensatorPID.initialValue
-            })
-        },
-        async getCompensatorPIDParametersLocal(){
-            const {kp, ki, kd, tolerance, errorTolerance,initialValue} = await this.getCompensatorPIDParameters()
-            this.compensatorPID.kp = kp
-            this.compensatorPID.ki = ki
-            this.compensatorPID.kd = kd
-            this.compensatorPID.tolerance = tolerance
-            this.compensatorPID.errorTolerance = errorTolerance
-            this.compensatorPID.initialValue = initialValue
-        },
-
 
         async saveDataToFile(){
 
@@ -447,7 +294,6 @@ export default defineComponent({
             },
             compensator: {
                 start:false,
-                enable:false,
                 options:[
                     {
                         label:"开启",
@@ -461,32 +307,10 @@ export default defineComponent({
             },
             heater:{
                 temperature:120,
-                enable:false,
                 started:false
             },
             progHeater:{
-                speed:10,
-                cool:10,
-                maxTemperature:400,
-                baseTemperature:23,
-                enable:false,
                 started:false
-            },
-            heaterPID: {
-                kp: 9e-4,
-                ki: 0,
-                kd: 0,
-                tolerance: 300000,
-                errorTolerance: 100000,
-                initialValue:500
-            },
-            compensatorPID: {
-                kp: 9e-4,
-                ki: 0,
-                kd: 0,
-                tolerance: 300000,
-                errorTolerance: 100000,
-                initialValue:500
             },
             chart: {
                 postion: {
@@ -559,6 +383,9 @@ export default defineComponent({
 </script>
 
 <style>
+#testcard{
+    height: 100%;
+}
 .testitem {
     padding: 12px 12px;
     margin-bottom: 20px;

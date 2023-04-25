@@ -10,6 +10,9 @@
                         <component :is="Component" />
                     </keep-alive>
                 </router-view>
+                <div id="heaterstatecard" class="controlcard">
+                    <heater-state></heater-state>
+                </div>
             </el-col>
             <el-col id="leftcol">
                 <side-nav></side-nav>
@@ -20,8 +23,9 @@
 
 <script>
 import { defineComponent, computed } from "vue";
-import SideNav from "/@/components/Nav.vue";
+import SideNav from "/@/components/SideNav.vue";
 import ChartFrame from "/@/components/ChartFrame.vue";
+import HeaterState from "/@/components/HeaterState.vue";
 
 const print = console
 
@@ -30,13 +34,20 @@ export default defineComponent({
     components: {
         SideNav,
         ChartFrame,
+        HeaterState
     },
     provide() {
         let self = this;
         return {
 
-			chartSwitch: computed(()=>this.chart.switch),
-			chartOption: computed(()=>this.chart.option),
+			chartSwitch: computed(()=>self.chart.switch),
+			chartOption: computed(()=>self.chart.option),
+            heaterStateEnable: computed(()=>self.heater.enable),
+            heaterStateProgrammed: computed(()=>self.heater.programmed),
+            heaterStateStarted: computed(()=>self.heater.started),
+            heaterStateType: computed(()=>self.heater.type),
+            compensatorStateEnable: computed(()=>self.compensator.enable),
+            compensatorStateStarted: computed(()=>self.compensator.started),
 			startChart(){
 				self.chart.switch = true
 				self.$refs.chartFrame.startChartEvent()
@@ -99,22 +110,73 @@ export default defineComponent({
                     return;
                 }
                 let check = await res.json().voltage;
+
+                if(voltage == 0){
+                    self.heater.started = false
+                    self.heater.type = "manual"
+                }else{
+                    self.heater.started = true
+                    self.heater.type = "manual"
+                }
+                
                 return check;
             },
-            async startHeaterProgram(baseVoltage,heatingSpeed,coolSpeed,maxTemperature,baseTemperature){
+            async setupHeaterState(enable){
+                if(enable){
+                    self.heater.enable = true
+                }else{
+                    self.heater.enable = false
+                }
+            },
+            async setupCompensatorState(enable){
+                if(enable){
+                    self.compensator.enable = true
+                }else{
+                    self.compensator.enable = false
+                }
+            },
+            async setupHeaterProgram(data){
+
+                self.heatProgram = data
+                self.heater.programmed = true
+                self.heater.type = "program"
+
+            },
+            async startHeaterProgram(baseVoltage){ 
+                
+                let process = []
+
+                for(let i = 0; i < self.heatProgram.process.length;i++){
+                    process.push({
+                        processtype: self.heatProgram.process[i].type,
+                        starttemperature: (typeof(self.heatProgram.process[i].startTemperature) == "string")?parseFloat(self.heatProgram.process[i].startTemperature):self.heatProgram.process[i].startTemperature,
+                        stoptemperature: (typeof(self.heatProgram.process[i].stopTemperature) == "string")?parseFloat(self.heatProgram.process[i].stopTemperature):self.heatProgram.process[i].stopTemperature,
+                        speed:(typeof(self.heatProgram.process[i].speed) == "string")?parseFloat(self.heatProgram.process[i].speed):self.heatProgram.process[i].speed,
+                        processtime:(typeof(self.heatProgram.process[i].time) == "string")?parseFloat(self.heatProgram.process[i].time):self.heatProgram.process[i].time,
+                    })
+                }
 
                 try {
                     await fetch(
                         "http://" +
                             self.httpAddr +
                             self.apiPref +
-                            "/heater/prog/start/" +
-                            baseVoltage+"/"+heatingSpeed+"/"+coolSpeed+"/"+maxTemperature+"/"+baseTemperature
+                            "/heater/prog/adv/start/"+self.heatProgram.count+"/"+baseVoltage+"/"+self.heatProgram.baseTemperature+"/",{
+                                method:'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body:JSON.stringify(process)
+                            }
                     );
                 } catch (e) {
                     print.error(e);
                     return;
-                }                
+                }
+
+                self.heater.started = true
+                self.heater.type = "program"
+
             },
             async stopHeaterProgram(){
                 try {
@@ -127,7 +189,11 @@ export default defineComponent({
                 } catch (e) {
                     print.error(e);
                     return;
-                }                
+                }
+                
+                self.heater.started = false
+                self.heater.type = "program"
+
             },
             async startHeaterStatic(temperature, baseVoltage){
 
@@ -142,7 +208,11 @@ export default defineComponent({
                 } catch (e) {
                     print.error(e);
                     return;
-                }                
+                }         
+                
+                self.heater.started = true
+                self.heater.type = "static"
+
             },
             async stopHeaterStatic(){
                 try {
@@ -155,7 +225,11 @@ export default defineComponent({
                 } catch (e) {
                     print.error(e);
                     return;
-                }                
+                }
+                
+                self.heater.started = false
+                self.heater.type = "static"
+
             },
             async setupHeaterStaticTemperature(temperature){
                 try {
@@ -194,7 +268,10 @@ export default defineComponent({
                     print.error(e);
                     return;
 
-                }                
+                }
+                
+                self.heater.enable = true
+
             },
             async setupCompensatorPIDParameters(pidsetting){
                 try {
@@ -219,7 +296,9 @@ export default defineComponent({
                     print.error(e);
                     return;
 
-                }                
+                }
+                
+                self.compensator.enable = true
             },
             async startAutoCompensator(){
                 try {
@@ -233,7 +312,9 @@ export default defineComponent({
                     print.error(e);
                     return;
 
-                }                
+                }
+                
+                self.compensator.started = true
             },
             async stopAutoCompensator(){
                 try {
@@ -247,7 +328,9 @@ export default defineComponent({
                     print.error(e);
                     return;
 
-                }                
+                }
+                
+                self.compensator.started = false
             },
             async startManualCompensator(){
                 try {
@@ -261,7 +344,8 @@ export default defineComponent({
                     print.error(e);
                     return;
 
-                }                
+                }
+                
             },
             async stopManualCompensator(){
                 try {
@@ -307,6 +391,22 @@ export default defineComponent({
 					}
 				}
 			},
+            heatProgram:{
+                count:0,
+                baseTemperature:0,
+                process:[]
+            },
+            heater:{
+                enable:false,
+                programmed:false,
+                started:false,
+                type:""
+            },
+            compensator:{
+                enable:false,
+                started:false,
+                type:""
+            },
             httpAddr: "192.168.3.1:3000",
             socketAddr: "192.168.3.1:4567",
             apiPref: "/api/v1",
@@ -360,6 +460,7 @@ body {
     height: 100%;
     border-left: 2px solid #e4e7ed;
     padding: 12px;
+    box-sizing: border-box;
 }
 .el-row.mainframe {
     height: 100%;
@@ -373,5 +474,9 @@ body {
     flex: 0 0 100%;
     max-width: 320px;
     height: 100vh;
+    padding-bottom: 60px;
+}
+#heaterstatecard {
+    height: 60px;
 }
 </style>
