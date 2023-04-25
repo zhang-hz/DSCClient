@@ -6,24 +6,24 @@
                 <el-row class="heattitle">快速设置</el-row>
                 <el-row class="heatrow">
                     <el-row class="heatinput">
-                        <el-input v-model="progHeaterQuick.speed" placeholder="升温速率" id="progheaterspeed" type="number"><template #prepend
+                        <el-input v-model="progHeaterQuick.speed" placeholder="升温速率" id="progheaterspeed"><template #prepend
                                 class="heatinputappend">升温速率</template>
                             <template #append class="heatinputappend">℃/s</template>
                         </el-input>
-                        <el-input v-model="progHeaterQuick.cool" placeholder="降温速率" id="progcoolspeed" type="number"><template #prepend
+                        <el-input v-model="progHeaterQuick.cool" placeholder="降温速率" id="progcoolspeed"><template #prepend
                                 class="heatinputappend">降温速率</template>
                             <template #append class="heatinputappend">℃/s</template>
                         </el-input>
-                        <el-input v-model="progHeaterQuick.holdTime" placeholder="保持时间" id="progheaterholdtime" type="number"><template
+                        <el-input v-model="progHeaterQuick.holdTime" placeholder="保持时间" id="progheaterholdtime"><template
                                 #prepend class="heatinputappend">保持时间</template>
                             <template #append class="heatinputappend">&nbsp秒&nbsp</template>
                         </el-input>
                         <el-input v-model="progHeaterQuick.maxTemperature" placeholder="最高温度"
-                            id="progheatermaxtemperature"><template #prepend class="heatinputappend"  type="number">最高温度</template>
+                            id="progheatermaxtemperature"><template #prepend class="heatinputappend" >最高温度</template>
                             <template #append class="heatinputappend">&nbsp℃&nbsp</template>
                         </el-input>
                         <el-input v-model="progHeaterQuick.baseTemperature" placeholder="基础温度"
-                            id="progheaterbasetemperature"><template #prepend class="heatinputappend"  type="number">基础温度</template>
+                            id="progheaterbasetemperature"><template #prepend class="heatinputappend" >基础温度</template>
                             <template #append class="heatinputappend">&nbsp℃&nbsp</template>
                         </el-input></el-row>
 
