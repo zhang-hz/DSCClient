@@ -39,7 +39,7 @@
             Developed by Zhang Haozhi in SIMIT, CAS
         </el-row>
         <el-row class="aboutfooter">
-            Version 1.1&nbsp;&nbsp;Check Update on &nbsp; <a href="https://github.com/zhang-hz/DSCClient" class="abouthref">Github</a>
+            Version 2.0&nbsp;&nbsp;Check Update on &nbsp; <a href="https://github.com/zhang-hz/DSCClient" class="abouthref">Github</a>
         </el-row>
     </div>
 </template>
