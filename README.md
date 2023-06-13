@@ -1,4 +1,4 @@
-# DSC Laboratory Kit 中文文档
+# DSC Laboratory Kit
 
 ## 1. 项目简介
 
